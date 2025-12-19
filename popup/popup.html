@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>ListenNotes Downloader</title>
+  <link rel="stylesheet" href="popup.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+  <div class="wrap">
+    <h1>ListenNotes 批量下载</h1>
+
+    <div class="section">
+      <button id="btn-scan" class="primary">扫描</button>
+      <button id="btn-download" class="primary">下载</button>
+      <button id="btn-reset" class="danger">重置</button>
+    </div>
+
+
+
+    <div class="section">
+      <div><strong>默认下载位置：</strong></div>
+      <div id="defaultDir" class="mono small">暂未推断</div>
+    </div>
+
+    <div class="section">
+      <div id="info">未扫描</div>
+      <div id="progress"></div>
+    </div>
+
+    <div class="section">
+      <details>
+        <summary>查看已抓取的条目 <span id="count">0</span></summary>
+        <ul id="list"></ul>
+      </details>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

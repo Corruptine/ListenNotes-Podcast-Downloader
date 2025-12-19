@@ -1,0 +1,21 @@
+body { font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif; margin: 0; }
+.wrap { width: 340px; padding: 12px; }
+h1 { font-size: 16px; margin: 0 0 10px; }
+.section { margin: 10px 0; }
+.grid2 { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; }
+button { padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc; background: #fff; cursor: pointer; }
+button.primary { background: #1976d2; color: #fff; border-color: #1976d2; }
+button.danger { background: #d32f2f; color: #fff; border-color: #d32f2f; }
+button.small { padding: 4px 8px; font-size: 12px; margin-right: 4px; }
+.mono { font-family: monospace; }
+.small { font-size: 12px; }
+.text-muted-color { color: #666; }
+.mt-2 { margin-top: 8px; }
+#info { color: #333; margin-bottom: 4px; }
+#progress { color: #555; font-size: 12px; }
+#list { list-style: none; padding: 0; margin: 0; max-height: 220px; overflow: auto; border: 1px solid #eee; border-radius: 6px; }
+#list .item { display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; border-bottom: 1px solid #f5f5f5; }
+#list .item:last-child { border-bottom: none; }
+#list .title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-right: 8px; }
+
+

@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "ListenNotes 播客批量下载器",
+  "version": "1.0.0",
+  "description": "在 ListenNotes 播客详情页抓取并批量下载所有音频（.m4a）",
+  "action": {
+    "default_title": "ListenNotes Downloader",
+    "default_popup": "popup/popup.html"
+  },
+  "permissions": [
+    "downloads",
+    "storage",
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://www.listennotes.com/*",
+    "https://audio.listennotes.com/*",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.listennotes.com/podcasts/*",
+        "https://listennotes.com/podcasts/*"
+      ],
+      "js": ["src/content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
+
