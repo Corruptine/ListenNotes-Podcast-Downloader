@@ -1,0 +1,494 @@
+{
+  "extensionName": {
+    "message": "ListenNotes ポッドキャスト一括ダウンローダー",
+    "description": "Extension name."
+  },
+  "extensionDescription": {
+    "message": "ListenNotes のポッドキャスト詳細ページから音声ファイルを検出し、一括ダウンロードします。",
+    "description": "Extension description."
+  },
+  "actionTitle": {
+    "message": "ListenNotes Downloader",
+    "description": "Toolbar action title."
+  },
+  "appAriaLabel": {
+    "message": "ListenNotes 一括ダウンローダー",
+    "description": "Popup main landmark label."
+  },
+  "languageLabel": {
+    "message": "言語",
+    "description": "Language picker label."
+  },
+  "heroTitle": {
+    "message": "一括ダウンローダー",
+    "description": "Popup title."
+  },
+  "statusNotScanned": {
+    "message": "未スキャン",
+    "description": "Initial status."
+  },
+  "actionsAriaLabel": {
+    "message": "主な操作",
+    "description": "Actions section label."
+  },
+  "scanButton": {
+    "message": "スキャン",
+    "description": "Scan button."
+  },
+  "downloadButton": {
+    "message": "ダウンロード",
+    "description": "Download button."
+  },
+  "resetButton": {
+    "message": "リセット",
+    "description": "Reset button."
+  },
+  "statsAriaLabel": {
+    "message": "ダウンロード状況",
+    "description": "Stats section label."
+  },
+  "statScanned": {
+    "message": "検出済み",
+    "description": "Scanned count label."
+  },
+  "statSelected": {
+    "message": "選択済み",
+    "description": "Selected count label."
+  },
+  "statAudioLinks": {
+    "message": "音声",
+    "description": "Captured audio URL count label."
+  },
+  "statQueue": {
+    "message": "キュー",
+    "description": "Queue count label."
+  },
+  "statComplete": {
+    "message": "完了",
+    "description": "Complete count label."
+  },
+  "statError": {
+    "message": "失敗",
+    "description": "Error count label."
+  },
+  "statMissingAudio": {
+    "message": "未取得",
+    "description": "Missing audio URL count label."
+  },
+  "techPanelAriaLabel": {
+    "message": "バックグラウンド処理情報",
+    "description": "Tech panel label."
+  },
+  "downloadPathLabel": {
+    "message": "保存先",
+    "description": "Download path label."
+  },
+  "stateIdle": {
+    "message": "待機中",
+    "description": "Idle state."
+  },
+  "stateRunning": {
+    "message": "実行中",
+    "description": "Running state."
+  },
+  "defaultDirUnknown": {
+    "message": "まだ推定していません",
+    "description": "Default directory fallback."
+  },
+  "pipelineAriaLabel": {
+    "message": "処理パイプラインの状態",
+    "description": "Pipeline label."
+  },
+  "pipelineGettingUrl": {
+    "message": "URL取得",
+    "description": "Getting URL status."
+  },
+  "pipelineResolving": {
+    "message": "解析",
+    "description": "Resolving status."
+  },
+  "pipelineDownloading": {
+    "message": "DL中",
+    "description": "Downloading status."
+  },
+  "pipelineSubmitted": {
+    "message": "送信済み",
+    "description": "Submitted status."
+  },
+  "episodesSummary": {
+    "message": "取得したエピソードを表示",
+    "description": "Details summary label."
+  },
+  "episodePage": {
+    "message": "詳細ページ",
+    "description": "Episode link label."
+  },
+  "untitledEpisode": {
+    "message": "無題のエピソード",
+    "description": "Fallback episode title."
+  },
+  "contentScriptNoResponse": {
+    "message": "コンテンツスクリプトが応答しません。ListenNotes ページを更新して再試行してください。",
+    "description": "Content script ping failure."
+  },
+  "wrongPage": {
+    "message": "ListenNotes のポッドキャスト詳細ページで使用してください。",
+    "description": "Wrong page message."
+  },
+  "scanScriptFailed": {
+    "message": "コンテンツスクリプトが応答しないか、スキャンに失敗しました。",
+    "description": "Scan fallback error."
+  },
+  "scanComplete": {
+    "message": "スキャン完了。$count$ 件のエピソードを検出しました。",
+    "description": "Scan completion message.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "scanCompleteShort": {
+    "message": "スキャン完了。$count$ 件見つかりました。",
+    "description": "Scan completion short message.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "scanFailed": {
+    "message": "スキャン失敗: $error$",
+    "description": "Scan failure message.",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Content script did not respond"
+      }
+    }
+  },
+  "missingSourceTab": {
+    "message": "スキャン元ページがありません。再スキャンしてからダウンロードしてください。",
+    "description": "Missing source tab."
+  },
+  "queueCreateFailed": {
+    "message": "バックグラウンドキューの作成に失敗しました。",
+    "description": "Queue creation fallback error."
+  },
+  "scanInProgress": {
+    "message": "スキャン中です。しばらくお待ちください...",
+    "description": "Scan progress status."
+  },
+  "downloadNeedsScan": {
+    "message": "ダウンロード前にページをスキャンしてください。",
+    "description": "No episodes warning."
+  },
+  "selectionAriaLabel": {
+    "message": "エピソード選択コントロール",
+    "description": "Selection controls section label."
+  },
+  "selectFirstLabel": {
+    "message": "先頭 N 件",
+    "description": "Select first N input label."
+  },
+  "selectFirstButton": {
+    "message": "選択",
+    "description": "Select first N button."
+  },
+  "selectAllButton": {
+    "message": "全選択",
+    "description": "Select all episodes button."
+  },
+  "clearSelectionButton": {
+    "message": "クリア",
+    "description": "Clear selected episodes button."
+  },
+  "listOrderNormalButton": {
+    "message": "通常",
+    "description": "Button label for the normal episode list order."
+  },
+  "listOrderReverseButton": {
+    "message": "逆順",
+    "description": "Button label for the reversed episode list order."
+  },
+  "selectEpisodeLabel": {
+    "message": "エピソードを選択",
+    "description": "Episode checkbox aria label prefix."
+  },
+  "downloadNeedsSelection": {
+    "message": "ダウンロードするエピソードを選択してください。",
+    "description": "No selected episodes warning."
+  },
+  "invalidSelectFirstCount": {
+    "message": "有効なエピソード数を入力してください。",
+    "description": "Invalid first N selection count."
+  },
+  "selectedFirstCount": {
+    "message": "先頭 $count$ 件を選択しました。",
+    "description": "Selected first N status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "selectionUpdated": {
+    "message": "選択済みエピソード: $count$",
+    "description": "Selected count status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "selectionCleared": {
+    "message": "選択をクリアしました。",
+    "description": "Selection cleared status."
+  },
+  "selectedMissingAudioFallback": {
+    "message": "選択したエピソードのうち $count$ 件は音声リンクを取得できていません。ページ上の代替解析を試します。",
+    "description": "Selected episodes missing cached audio URL warning.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "resolvingSelectedAudioLinks": {
+    "message": "選択した $count$ 件の音声リンクを取得しています...",
+    "description": "Selected episodes missing cached audio URL are being resolved.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "noAudioLinksResolved": {
+    "message": "音声リンクを解析できませんでした。ListenNotes ページを開いたまま再試行するか、通常ダウンロードを使ってください。",
+    "description": "No selected episodes could be resolved to audio links."
+  },
+  "submittingDownloads": {
+    "message": "$count$ 件のエピソードをバックグラウンド処理へ送信しています...",
+    "description": "Download submission status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "queueAdded": {
+    "message": "ダウンロードキューに追加しました: $count$ 件",
+    "description": "Queue added status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "openingManagerWindow": {
+    "message": "続行するため別の拡張機能ウィンドウを開いています...",
+    "description": "Shown before opening the persistent manager window."
+  },
+  "managerWindowOpened": {
+    "message": "別の拡張機能ウィンドウで続行しています。",
+    "description": "Shown after the persistent manager window is opened."
+  },
+  "managerWindowOpenFailed": {
+    "message": "別の拡張機能ウィンドウを開けませんでした。",
+    "description": "Fallback error when the persistent manager window cannot be opened."
+  },
+  "downloadFailed": {
+    "message": "ダウンロード失敗: $error$",
+    "description": "Download failure message.",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Content script did not respond"
+      }
+    }
+  },
+  "zipDownloadButton": {
+    "message": "ZIP",
+    "description": "ZIP download button."
+  },
+  "zipIdle": {
+    "message": "ZIP 待機中",
+    "description": "ZIP idle status."
+  },
+  "zipPreparing": {
+    "message": "ZIP 準備中: $current$/$total$",
+    "description": "ZIP resolving status.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" }
+    }
+  },
+  "zipFetching": {
+    "message": "音声取得中: $current$/$total$",
+    "description": "ZIP fetching status.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" }
+    }
+  },
+  "zipGenerating": {
+    "message": "ZIP 生成中...",
+    "description": "ZIP generation status."
+  },
+  "zipReady": {
+    "message": "ZIP の準備ができました。保存先を選択してください。",
+    "description": "ZIP ready status."
+  },
+  "zipTooLarge": {
+    "message": "ZIP が大きすぎます。通常ダウンロードを使用してください。",
+    "description": "ZIP size limit status."
+  },
+  "zipFailed": {
+    "message": "ZIP 失敗: $error$",
+    "description": "ZIP failure status.",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Network failed"
+      }
+    }
+  },
+  "zipBuilderConnectionClosed": {
+    "message": "ZIP ビルダーの接続が切れました。もう一度試すか、通常ダウンロードを使ってください。",
+    "description": "ZIP builder connection failure detail."
+  },
+  "zipAudioConnectionClosed": {
+    "message": "音声ホストの接続が閉じられたか、ZIP 用の取得が拒否されました。通常ダウンロードを使ってください。",
+    "description": "ZIP audio fetch connection failure detail."
+  },
+  "zipAllAudioFetchFailed": {
+    "message": "選択した音声ファイルを ZIP 用に取得できませんでした。通常ダウンロードを使ってください。",
+    "description": "All selected audio files failed in ZIP mode."
+  },
+  "zipNeedsAudioLinks": {
+    "message": "選択したエピソードに取得済みの音声リンクがありません。ZIP を作成する前にページを再スキャンしてください。",
+    "description": "ZIP blocked because no selected episode has a cached audio URL."
+  },
+  "downloadTaskBusy": {
+    "message": "通常ダウンロード処理中です。",
+    "description": "Shown when ZIP is disabled by a running regular download task."
+  },
+  "zipTaskBusy": {
+    "message": "ZIP 処理中です。",
+    "description": "Shown when regular download is disabled by a running ZIP task."
+  },
+  "cancelTaskButton": {
+    "message": "停止",
+    "description": "Button label for stopping the current ZIP task."
+  },
+  "cancelEpisodeButton": {
+    "message": "キャンセル",
+    "description": "Button label for cancelling one regular download item."
+  },
+  "cancelledStatus": {
+    "message": "キャンセルしました。",
+    "description": "Shown after cancelling a regular download item."
+  },
+  "zipCancelled": {
+    "message": "ZIP をキャンセルしました。",
+    "description": "ZIP task cancelled status."
+  },
+  "taskProgressLabel": {
+    "message": "現在のタスク進捗",
+    "description": "Current task progress region label."
+  },
+  "taskProgressIdle": {
+    "message": "現在のタスクはありません",
+    "description": "Idle current task progress text."
+  },
+  "taskProgressDownload": {
+    "message": "ダウンロード: $loaded$ / $bytesTotal$ ($percent$%)",
+    "description": "Regular download task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" }
+    }
+  },
+  "taskProgressZip": {
+    "message": "ZIP: $loaded$ / $bytesTotal$ ($percent$%)",
+    "description": "ZIP task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" }
+    }
+  },
+  "taskProgressDownloadUnknown": {
+    "message": "ダウンロード: $loaded$ / $bytesTotal$ ($percent$%、サイズ不明のファイルを含む)",
+    "description": "Regular download byte progress text when some files have unknown sizes.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" },
+      "unknown": { "content": "$6", "example": "2" }
+    }
+  },
+  "taskProgressZipUnknown": {
+    "message": "ZIP: $loaded$ / $bytesTotal$ ($percent$%、サイズ不明のファイルを含む)",
+    "description": "ZIP byte progress text when some files have unknown sizes.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" },
+      "unknown": { "content": "$6", "example": "2" }
+    }
+  },
+  "taskProgressComplete": {
+    "message": "現在のタスク完了: $current$/$total$ ($percent$%)",
+    "description": "Completed current task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "12" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "100" }
+    }
+  },
+  "taskProgressError": {
+    "message": "現在のタスク失敗: $current$/$total$ ($percent$%)",
+    "description": "Failed current task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "5" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "42" }
+    }
+  },
+  "missingAudioStatus": {
+    "message": "選択したエピソードのうち $count$ 件は音声リンク未取得のためスキップします。",
+    "description": "Selected episodes missing cached audio URL will be skipped.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "unknownError": {
+    "message": "不明なエラー",
+    "description": "Unknown error fallback."
+  },
+  "resetDone": {
+    "message": "リセットしました",
+    "description": "Reset status."
+  }
+}

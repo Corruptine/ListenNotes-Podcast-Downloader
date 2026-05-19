@@ -1,90 +1,201 @@
-# ListenNotes 播客批量下载器
+# ListenNotes Podcast Downloader
 
-## 版本信息
-**当前版本：** V1.0.0
+Current version: V2.0
 
-## 简介
+## 中文说明
 
-ListenNotes 播客批量下载器是一个 Chrome 浏览器扩展程序，用于在 ListenNotes 播客详情页自动扫描并批量下载所有音频文件。
+### 项目简介
 
-## 功能特性
+ListenNotes Podcast Downloader 是一个 Chrome 扩展，用于在 ListenNotes 播客详情页扫描剧集，并批量下载对应的音频文件。V2.0 重点优化了多语言界面、剧集选择、ZIP 打包下载、任务进度和错误提示，适合在发布目录中直接加载或提交到 Chrome 扩展发布流程。
 
-- ✅ **自动扫描**：自动加载并扫描播客页面上的所有剧集
-- ✅ **批量下载**：支持一键批量下载所有音频文件
-- ✅ **智能解析**：自动解析音频链接，处理重定向和中间页面
-- ✅ **进度显示**：实时显示下载进度和状态
-- ✅ **错误处理**：完善的错误处理和超时机制
-- ✅ **去重处理**：自动跳过重复的剧集
-- ✅ **文件命名**：自动使用播客名称和剧集标题命名文件
+### 适用页面
 
-## 安装方法
+- `https://www.listennotes.com/podcasts/*`
+- `https://listennotes.com/podcasts/*`
 
-### 从源码安装
+### 主要功能
 
-1. 下载或克隆本项目到本地
-2. 打开 Chrome 浏览器，进入扩展程序管理页面：
-   - 地址栏输入 `chrome://extensions/`
-   - 或通过菜单：更多工具 → 扩展程序
-3. 开启右上角的"开发者模式"
-4. 点击"加载已解压的扩展程序"
-5. 选择本项目的根目录（包含 `manifest.json` 的文件夹）
-6. 扩展程序安装完成
+- 自动扫描 ListenNotes 播客详情页中的剧集。
+- 支持普通批量下载和 ZIP 打包下载。
+- 支持全选、清空、选择前 N 集和列表顺序切换。
+- 支持英文、简体中文、日文、西班牙文界面。
+- 自动解析音频链接，覆盖 RSS、ListenNotes 页面接口、DOM 扫描和回退解析。
+- 显示普通下载与 ZIP 下载的任务状态、字节进度和失败信息。
+- 支持取消当前任务、取消单个下载项和重置状态。
 
-## 使用方法
+### 安装方法
 
-1. **打开播客页面**：访问 ListenNotes 上的任意播客详情页
-   - 例如：`https://www.listennotes.com/podcasts/...`
+1. 运行 `npm install` 安装依赖。
+2. 运行 `npm run check` 确认项目检查通过。
+3. 运行 `npm run package` 生成发布目录。
+4. 打开 Chrome，进入 `chrome://extensions/`。
+5. 开启右上角的开发者模式。
+6. 点击“加载已解压的扩展程序”。
+7. 选择 `dist/listennotes-podcast-downloader` 目录。
 
-2. **点击扩展图标**：点击浏览器工具栏中的扩展程序图标
+### 使用方法
 
-3. **扫描剧集**：
-   - 点击"扫描"按钮，扩展会自动加载页面上的所有剧集
-   - 扫描过程会自动点击"加载更多"按钮，直到加载完所有剧集
-   - 扫描完成后会显示找到的剧集数量
+1. 打开 ListenNotes 播客详情页。
+2. 点击浏览器工具栏中的扩展图标。
+3. 点击 `Scan` 扫描当前播客剧集。
+4. 按需选择剧集：全部、清空、前 N 集或切换列表顺序。
+5. 点击 `Download` 进行普通批量下载，或点击 `ZIP` 生成打包下载。
+6. 在弹窗中查看任务进度、失败数量和错误提示。
 
-4. **开始下载**：
-   - 点击"下载"按钮开始批量下载
-   - 下载过程会串行处理，确保稳定性
-   - 可以在扩展弹窗中查看下载进度和状态
+### 发布目录说明
 
-5. **查看结果**：
-   - 点击"查看已抓取的条目"可以查看所有剧集的详细信息
-   - 下载的文件会保存到浏览器的默认下载目录
+执行 `npm run package` 后，会生成：
 
-## 项目结构
-
-```
-listen-notes-downloader/
-├── manifest.json          # 扩展程序配置文件
-├── popup/                 # 弹窗界面
-│   ├── popup.html        # 弹窗 HTML
-│   ├── popup.css         # 弹窗样式
-│   └── popup.js          # 弹窗逻辑
-└── src/                  # 核心功能代码
-    ├── background.js     # 后台服务（下载管理）
-    └── content.js        # 内容脚本（页面交互）
+```text
+dist/listennotes-podcast-downloader
 ```
 
+该目录是本次发布使用的最终扩展目录，包含：
 
-## 更新日志
+- `manifest.json`
+- `src/`
+- `popup/`
+- `offscreen/`
+- `_locales/`
+- `vendor/`
+- `README.md`
 
-### V1.0.0 (2025)
-- 🎉 首次发布
-- ✅ 实现播客剧集自动扫描功能
-- ✅ 实现批量下载功能
-- ✅ 支持 URL 自动解析和重定向处理
-- ✅ 添加进度显示和状态管理
-- ✅ 完善错误处理和超时机制
+发布目录不应包含 `node_modules/`、`.playwright-mcp/`、`test-results/`、测试报告或临时缓存。
 
-## 许可证
+### 项目结构
 
-本项目仅供学习和个人使用。
+```text
+listennotes-podcast-downloader/
+├── manifest.json
+├── popup/
+├── src/
+├── offscreen/
+├── _locales/
+├── vendor/
+├── test/
+├── e2e/
+├── package.json
+└── README.md
+```
 
-## 反馈与支持
+### V2.0 优化点
 
-如有问题或建议，欢迎提交 Issue 或 Pull Request。
+- 新增多语言界面：英文、简体中文、日文、西班牙文。
+- 新增剧集选择能力：全选、清空、选择前 N 集、列表顺序切换。
+- 新增 ZIP 打包下载流程，使用 offscreen document 和 vendored JSZip。
+- 优化普通下载与 ZIP 下载的进度展示、状态恢复和取消能力。
+- 优化音频链接解析，支持 RSS、ListenNotes 页面接口、DOM 扫描和回退解析。
+- 优化错误提示，覆盖网络失败、ZIP 连接关闭、无音频链接、任务冲突等场景。
+- 缩小 content script 注入范围，仅针对 ListenNotes 播客详情页。
+- 增加 Node 单元测试、包资源检查和 Playwright E2E 测试配置。
+
+### 测试与打包命令
+
+```bash
+npm run check
+npm run package
+```
+
+### 注意事项
+
+本工具仅用于个人学习、研究和合法备份。请遵守 ListenNotes 的使用条款、播客版权要求以及你所在地区的相关法律法规。
 
 ---
 
-**注意**：本工具仅用于个人学习和研究，请遵守 ListenNotes 的使用条款和版权规定。
+## English
 
+### Overview
+
+ListenNotes Podcast Downloader is a Chrome extension for scanning ListenNotes podcast detail pages and batch downloading episode audio files. V2.0 improves localization, episode selection, ZIP packaging, task progress, and error handling, making the generated release folder ready for local loading or extension publishing workflows.
+
+### Supported Pages
+
+- `https://www.listennotes.com/podcasts/*`
+- `https://listennotes.com/podcasts/*`
+
+### Features
+
+- Scan episodes from ListenNotes podcast detail pages.
+- Download selected episodes individually or package them into one ZIP file.
+- Select all episodes, clear selection, select the first N episodes, and switch list order.
+- Localized UI for English, Simplified Chinese, Japanese, and Spanish.
+- Resolve audio links through RSS, ListenNotes page endpoints, DOM scanning, and fallback parsing.
+- Show task state, byte progress, completed counts, and failure details for regular and ZIP downloads.
+- Cancel the current task, cancel individual download items, and reset extension state.
+
+### Installation
+
+1. Run `npm install` to install dependencies.
+2. Run `npm run check` to verify the project.
+3. Run `npm run package` to generate the release folder.
+4. Open Chrome and go to `chrome://extensions/`.
+5. Enable Developer mode.
+6. Click `Load unpacked`.
+7. Select `dist/listennotes-podcast-downloader`.
+
+### Usage
+
+1. Open a ListenNotes podcast detail page.
+2. Click the extension icon in the browser toolbar.
+3. Click `Scan` to scan the current podcast page.
+4. Choose episodes with all, clear, first N, or list order controls.
+5. Click `Download` for regular batch downloads, or `ZIP` to generate one archive.
+6. Watch task progress, failed counts, and error messages in the popup.
+
+### Release Folder
+
+After running `npm run package`, the release folder is:
+
+```text
+dist/listennotes-podcast-downloader
+```
+
+It contains only the extension resources needed for release:
+
+- `manifest.json`
+- `src/`
+- `popup/`
+- `offscreen/`
+- `_locales/`
+- `vendor/`
+- `README.md`
+
+The release folder should not include `node_modules/`, `.playwright-mcp/`, `test-results/`, reports, or temporary caches.
+
+### Project Structure
+
+```text
+listennotes-podcast-downloader/
+├── manifest.json
+├── popup/
+├── src/
+├── offscreen/
+├── _locales/
+├── vendor/
+├── test/
+├── e2e/
+├── package.json
+└── README.md
+```
+
+### V2.0 Improvements
+
+- Added localized UI support for English, Simplified Chinese, Japanese, and Spanish.
+- Added episode selection controls: all, clear, first N, and list order switching.
+- Added ZIP packaging through an offscreen document and vendored JSZip.
+- Improved regular and ZIP download progress, state recovery, and cancellation.
+- Improved audio URL resolution through RSS, ListenNotes page endpoints, DOM scanning, and fallback parsing.
+- Improved error messages for network failures, ZIP connection closures, missing audio links, and task conflicts.
+- Narrowed content script injection to ListenNotes podcast detail pages only.
+- Added Node unit tests, package resource checks, and Playwright E2E configuration.
+
+### Test and Package Commands
+
+```bash
+npm run check
+npm run package
+```
+
+### Disclaimer
+
+This tool is intended for personal learning, research, and lawful backup only. Follow ListenNotes terms of service, podcast copyright rules, and all applicable laws in your region.

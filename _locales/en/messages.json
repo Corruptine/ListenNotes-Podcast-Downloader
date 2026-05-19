@@ -1,0 +1,494 @@
+{
+  "extensionName": {
+    "message": "ListenNotes Podcast Downloader",
+    "description": "Extension name."
+  },
+  "extensionDescription": {
+    "message": "Scan and batch download all audio files from ListenNotes podcast detail pages.",
+    "description": "Extension description."
+  },
+  "actionTitle": {
+    "message": "ListenNotes Downloader",
+    "description": "Toolbar action title."
+  },
+  "appAriaLabel": {
+    "message": "ListenNotes batch downloader",
+    "description": "Popup main landmark label."
+  },
+  "languageLabel": {
+    "message": "Language",
+    "description": "Language picker label."
+  },
+  "heroTitle": {
+    "message": "Batch Downloader",
+    "description": "Popup title."
+  },
+  "statusNotScanned": {
+    "message": "Not scanned yet",
+    "description": "Initial status."
+  },
+  "actionsAriaLabel": {
+    "message": "Primary actions",
+    "description": "Actions section label."
+  },
+  "scanButton": {
+    "message": "Scan",
+    "description": "Scan button."
+  },
+  "downloadButton": {
+    "message": "Download",
+    "description": "Download button."
+  },
+  "resetButton": {
+    "message": "Reset",
+    "description": "Reset button."
+  },
+  "statsAriaLabel": {
+    "message": "Download status",
+    "description": "Stats section label."
+  },
+  "statScanned": {
+    "message": "Scanned",
+    "description": "Scanned count label."
+  },
+  "statSelected": {
+    "message": "Selected",
+    "description": "Selected count label."
+  },
+  "statAudioLinks": {
+    "message": "Audio",
+    "description": "Captured audio URL count label."
+  },
+  "statQueue": {
+    "message": "Queue",
+    "description": "Queue count label."
+  },
+  "statComplete": {
+    "message": "Done",
+    "description": "Complete count label."
+  },
+  "statError": {
+    "message": "Failed",
+    "description": "Error count label."
+  },
+  "statMissingAudio": {
+    "message": "Missing",
+    "description": "Missing audio URL count label."
+  },
+  "techPanelAriaLabel": {
+    "message": "Background processing information",
+    "description": "Tech panel label."
+  },
+  "downloadPathLabel": {
+    "message": "Download Path",
+    "description": "Download path label."
+  },
+  "stateIdle": {
+    "message": "Idle",
+    "description": "Idle state."
+  },
+  "stateRunning": {
+    "message": "Running",
+    "description": "Running state."
+  },
+  "defaultDirUnknown": {
+    "message": "Not inferred yet",
+    "description": "Default directory fallback."
+  },
+  "pipelineAriaLabel": {
+    "message": "Processing pipeline status",
+    "description": "Pipeline label."
+  },
+  "pipelineGettingUrl": {
+    "message": "Get URL",
+    "description": "Getting URL status."
+  },
+  "pipelineResolving": {
+    "message": "Resolve",
+    "description": "Resolving status."
+  },
+  "pipelineDownloading": {
+    "message": "Download",
+    "description": "Downloading status."
+  },
+  "pipelineSubmitted": {
+    "message": "Submitted",
+    "description": "Submitted status."
+  },
+  "episodesSummary": {
+    "message": "View captured episodes",
+    "description": "Details summary label."
+  },
+  "episodePage": {
+    "message": "episode page",
+    "description": "Episode link label."
+  },
+  "untitledEpisode": {
+    "message": "Untitled episode",
+    "description": "Fallback episode title."
+  },
+  "contentScriptNoResponse": {
+    "message": "Content script did not respond. Refresh the ListenNotes page and try again.",
+    "description": "Content script ping failure."
+  },
+  "wrongPage": {
+    "message": "Use this on a ListenNotes podcast detail page.",
+    "description": "Wrong page message."
+  },
+  "scanScriptFailed": {
+    "message": "Content script did not respond or scan failed.",
+    "description": "Scan fallback error."
+  },
+  "scanComplete": {
+    "message": "Scan complete. Found $count$ episodes.",
+    "description": "Scan completion message.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "scanCompleteShort": {
+    "message": "Scan complete. $count$ found.",
+    "description": "Scan completion short message.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "scanFailed": {
+    "message": "Scan failed: $error$",
+    "description": "Scan failure message.",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Content script did not respond"
+      }
+    }
+  },
+  "missingSourceTab": {
+    "message": "Missing source page. Scan again before downloading.",
+    "description": "Missing source tab."
+  },
+  "queueCreateFailed": {
+    "message": "Failed to create the background queue.",
+    "description": "Queue creation fallback error."
+  },
+  "scanInProgress": {
+    "message": "Scanning. Please wait...",
+    "description": "Scan progress status."
+  },
+  "downloadNeedsScan": {
+    "message": "Scan the page before downloading.",
+    "description": "No episodes warning."
+  },
+  "selectionAriaLabel": {
+    "message": "Episode selection controls",
+    "description": "Selection controls section label."
+  },
+  "selectFirstLabel": {
+    "message": "First N",
+    "description": "Select first N input label."
+  },
+  "selectFirstButton": {
+    "message": "Pick",
+    "description": "Select first N button."
+  },
+  "selectAllButton": {
+    "message": "All",
+    "description": "Select all episodes button."
+  },
+  "clearSelectionButton": {
+    "message": "Clear",
+    "description": "Clear selected episodes button."
+  },
+  "listOrderNormalButton": {
+    "message": "Normal",
+    "description": "Button label for the normal episode list order."
+  },
+  "listOrderReverseButton": {
+    "message": "Reverse",
+    "description": "Button label for the reversed episode list order."
+  },
+  "selectEpisodeLabel": {
+    "message": "Select episode",
+    "description": "Episode checkbox aria label prefix."
+  },
+  "downloadNeedsSelection": {
+    "message": "Select episodes before downloading.",
+    "description": "No selected episodes warning."
+  },
+  "invalidSelectFirstCount": {
+    "message": "Enter a valid number of episodes.",
+    "description": "Invalid first N selection count."
+  },
+  "selectedFirstCount": {
+    "message": "Selected the first $count$ episodes.",
+    "description": "Selected first N status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "selectionUpdated": {
+    "message": "Selected episodes: $count$",
+    "description": "Selected count status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "selectionCleared": {
+    "message": "Selection cleared.",
+    "description": "Selection cleared status."
+  },
+  "selectedMissingAudioFallback": {
+    "message": "$count$ selected episodes have no captured audio link. The extension will try page fallback parsing.",
+    "description": "Selected episodes missing cached audio URL warning.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "resolvingSelectedAudioLinks": {
+    "message": "Resolving audio links for $count$ selected episodes...",
+    "description": "Selected episodes missing cached audio URL are being resolved.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "noAudioLinksResolved": {
+    "message": "No audio links could be resolved. Keep the ListenNotes page open and try again, or use regular download.",
+    "description": "No selected episodes could be resolved to audio links."
+  },
+  "submittingDownloads": {
+    "message": "Submitting $count$ episodes to background processing...",
+    "description": "Download submission status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "queueAdded": {
+    "message": "Added to download queue: $count$",
+    "description": "Queue added status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "openingManagerWindow": {
+    "message": "Opening a separate extension window to continue...",
+    "description": "Shown before opening the persistent manager window."
+  },
+  "managerWindowOpened": {
+    "message": "Continuing in the separate extension window.",
+    "description": "Shown after the persistent manager window is opened."
+  },
+  "managerWindowOpenFailed": {
+    "message": "Failed to open the separate extension window.",
+    "description": "Fallback error when the persistent manager window cannot be opened."
+  },
+  "downloadFailed": {
+    "message": "Download failed: $error$",
+    "description": "Download failure message.",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Content script did not respond"
+      }
+    }
+  },
+  "zipDownloadButton": {
+    "message": "ZIP",
+    "description": "ZIP download button."
+  },
+  "zipIdle": {
+    "message": "ZIP idle",
+    "description": "ZIP idle status."
+  },
+  "zipPreparing": {
+    "message": "Preparing ZIP: $current$/$total$",
+    "description": "ZIP resolving status.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" }
+    }
+  },
+  "zipFetching": {
+    "message": "Fetching audio: $current$/$total$",
+    "description": "ZIP fetching status.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" }
+    }
+  },
+  "zipGenerating": {
+    "message": "Generating ZIP...",
+    "description": "ZIP generation status."
+  },
+  "zipReady": {
+    "message": "ZIP ready. Choose where to save it.",
+    "description": "ZIP ready status."
+  },
+  "zipTooLarge": {
+    "message": "ZIP is too large. Use regular download instead.",
+    "description": "ZIP size limit status."
+  },
+  "zipFailed": {
+    "message": "ZIP failed: $error$",
+    "description": "ZIP failure status.",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Network failed"
+      }
+    }
+  },
+  "zipBuilderConnectionClosed": {
+    "message": "ZIP builder connection closed. Try again or use regular download.",
+    "description": "ZIP builder connection failure detail."
+  },
+  "zipAudioConnectionClosed": {
+    "message": "Audio host connection closed or rejected ZIP fetch. Try regular download.",
+    "description": "ZIP audio fetch connection failure detail."
+  },
+  "zipAllAudioFetchFailed": {
+    "message": "All selected audio files failed to fetch for ZIP. Try regular download.",
+    "description": "All selected audio files failed in ZIP mode."
+  },
+  "zipNeedsAudioLinks": {
+    "message": "No selected episodes have captured audio links. Rescan the page before creating a ZIP.",
+    "description": "ZIP blocked because no selected episode has a cached audio URL."
+  },
+  "downloadTaskBusy": {
+    "message": "A regular download task is running.",
+    "description": "Shown when ZIP is disabled by a running regular download task."
+  },
+  "zipTaskBusy": {
+    "message": "A ZIP task is running.",
+    "description": "Shown when regular download is disabled by a running ZIP task."
+  },
+  "cancelTaskButton": {
+    "message": "Stop",
+    "description": "Button label for stopping the current ZIP task."
+  },
+  "cancelEpisodeButton": {
+    "message": "Cancel",
+    "description": "Button label for cancelling one regular download item."
+  },
+  "cancelledStatus": {
+    "message": "Cancelled.",
+    "description": "Shown after cancelling a regular download item."
+  },
+  "zipCancelled": {
+    "message": "ZIP cancelled.",
+    "description": "ZIP task cancelled status."
+  },
+  "taskProgressLabel": {
+    "message": "Current task progress",
+    "description": "Current task progress region label."
+  },
+  "taskProgressIdle": {
+    "message": "Current task idle",
+    "description": "Idle current task progress text."
+  },
+  "taskProgressDownload": {
+    "message": "Downloading: $loaded$ / $bytesTotal$ ($percent$%)",
+    "description": "Regular download task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" }
+    }
+  },
+  "taskProgressZip": {
+    "message": "ZIP task: $loaded$ / $bytesTotal$ ($percent$%)",
+    "description": "ZIP task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" }
+    }
+  },
+  "taskProgressDownloadUnknown": {
+    "message": "Downloading: $loaded$ / $bytesTotal$ ($percent$%, includes unknown-size files)",
+    "description": "Regular download byte progress text when some files have unknown sizes.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" },
+      "unknown": { "content": "$6", "example": "2" }
+    }
+  },
+  "taskProgressZipUnknown": {
+    "message": "ZIP task: $loaded$ / $bytesTotal$ ($percent$%, includes unknown-size files)",
+    "description": "ZIP byte progress text when some files have unknown sizes.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" },
+      "unknown": { "content": "$6", "example": "2" }
+    }
+  },
+  "taskProgressComplete": {
+    "message": "Current task complete: $current$/$total$ ($percent$%)",
+    "description": "Completed current task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "12" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "100" }
+    }
+  },
+  "taskProgressError": {
+    "message": "Current task failed: $current$/$total$ ($percent$%)",
+    "description": "Failed current task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "5" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "42" }
+    }
+  },
+  "missingAudioStatus": {
+    "message": "$count$ selected episodes have no captured audio link and will be skipped.",
+    "description": "Selected episodes missing cached audio URL will be skipped.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "unknownError": {
+    "message": "Unknown error",
+    "description": "Unknown error fallback."
+  },
+  "resetDone": {
+    "message": "Reset complete",
+    "description": "Reset status."
+  }
+}

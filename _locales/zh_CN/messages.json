@@ -1,0 +1,494 @@
+{
+  "extensionName": {
+    "message": "ListenNotes 播客批量下载器",
+    "description": "Extension name."
+  },
+  "extensionDescription": {
+    "message": "在 ListenNotes 播客详情页抓取并批量下载所有音频文件。",
+    "description": "Extension description."
+  },
+  "actionTitle": {
+    "message": "ListenNotes 下载器",
+    "description": "Toolbar action title."
+  },
+  "appAriaLabel": {
+    "message": "ListenNotes 批量下载器",
+    "description": "Popup main landmark label."
+  },
+  "languageLabel": {
+    "message": "语言",
+    "description": "Language picker label."
+  },
+  "heroTitle": {
+    "message": "批量下载器",
+    "description": "Popup title."
+  },
+  "statusNotScanned": {
+    "message": "未扫描",
+    "description": "Initial status."
+  },
+  "actionsAriaLabel": {
+    "message": "主要操作",
+    "description": "Actions section label."
+  },
+  "scanButton": {
+    "message": "扫描",
+    "description": "Scan button."
+  },
+  "downloadButton": {
+    "message": "下载",
+    "description": "Download button."
+  },
+  "resetButton": {
+    "message": "重置",
+    "description": "Reset button."
+  },
+  "statsAriaLabel": {
+    "message": "下载状态",
+    "description": "Stats section label."
+  },
+  "statScanned": {
+    "message": "已扫描",
+    "description": "Scanned count label."
+  },
+  "statSelected": {
+    "message": "已勾选",
+    "description": "Selected count label."
+  },
+  "statAudioLinks": {
+    "message": "音频",
+    "description": "Captured audio URL count label."
+  },
+  "statQueue": {
+    "message": "队列",
+    "description": "Queue count label."
+  },
+  "statComplete": {
+    "message": "完成",
+    "description": "Complete count label."
+  },
+  "statError": {
+    "message": "失败",
+    "description": "Error count label."
+  },
+  "statMissingAudio": {
+    "message": "缺失",
+    "description": "Missing audio URL count label."
+  },
+  "techPanelAriaLabel": {
+    "message": "后台处理信息",
+    "description": "Tech panel label."
+  },
+  "downloadPathLabel": {
+    "message": "下载路径",
+    "description": "Download path label."
+  },
+  "stateIdle": {
+    "message": "空闲",
+    "description": "Idle state."
+  },
+  "stateRunning": {
+    "message": "运行中",
+    "description": "Running state."
+  },
+  "defaultDirUnknown": {
+    "message": "暂未推断",
+    "description": "Default directory fallback."
+  },
+  "pipelineAriaLabel": {
+    "message": "处理流水线状态",
+    "description": "Pipeline label."
+  },
+  "pipelineGettingUrl": {
+    "message": "取链",
+    "description": "Getting URL status."
+  },
+  "pipelineResolving": {
+    "message": "解析",
+    "description": "Resolving status."
+  },
+  "pipelineDownloading": {
+    "message": "下载",
+    "description": "Downloading status."
+  },
+  "pipelineSubmitted": {
+    "message": "已提交",
+    "description": "Submitted status."
+  },
+  "episodesSummary": {
+    "message": "查看已抓取条目",
+    "description": "Details summary label."
+  },
+  "episodePage": {
+    "message": "剧集页",
+    "description": "Episode link label."
+  },
+  "untitledEpisode": {
+    "message": "未命名剧集",
+    "description": "Fallback episode title."
+  },
+  "contentScriptNoResponse": {
+    "message": "内容脚本未响应，请刷新 ListenNotes 页面后重试。",
+    "description": "Content script ping failure."
+  },
+  "wrongPage": {
+    "message": "请在 ListenNotes 播客详情页使用。",
+    "description": "Wrong page message."
+  },
+  "scanScriptFailed": {
+    "message": "内容脚本未响应或扫描失败。",
+    "description": "Scan fallback error."
+  },
+  "scanComplete": {
+    "message": "扫描完成，找到 $count$ 条播客。",
+    "description": "Scan completion message.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "scanCompleteShort": {
+    "message": "扫描完成，共找到 $count$ 条。",
+    "description": "Scan completion short message.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "scanFailed": {
+    "message": "扫描失败：$error$",
+    "description": "Scan failure message.",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Content script did not respond"
+      }
+    }
+  },
+  "missingSourceTab": {
+    "message": "缺少扫描来源页面，请重新扫描后下载。",
+    "description": "Missing source tab."
+  },
+  "queueCreateFailed": {
+    "message": "后台队列创建失败。",
+    "description": "Queue creation fallback error."
+  },
+  "scanInProgress": {
+    "message": "扫描中，请稍候...",
+    "description": "Scan progress status."
+  },
+  "downloadNeedsScan": {
+    "message": "请先扫描页面，再点击下载。",
+    "description": "No episodes warning."
+  },
+  "selectionAriaLabel": {
+    "message": "剧集选择控件",
+    "description": "Selection controls section label."
+  },
+  "selectFirstLabel": {
+    "message": "前 N 条",
+    "description": "Select first N input label."
+  },
+  "selectFirstButton": {
+    "message": "勾选",
+    "description": "Select first N button."
+  },
+  "selectAllButton": {
+    "message": "全选",
+    "description": "Select all episodes button."
+  },
+  "clearSelectionButton": {
+    "message": "清空",
+    "description": "Clear selected episodes button."
+  },
+  "listOrderNormalButton": {
+    "message": "顺序",
+    "description": "Button label for the normal episode list order."
+  },
+  "listOrderReverseButton": {
+    "message": "逆序",
+    "description": "Button label for the reversed episode list order."
+  },
+  "selectEpisodeLabel": {
+    "message": "勾选剧集",
+    "description": "Episode checkbox aria label prefix."
+  },
+  "downloadNeedsSelection": {
+    "message": "请先勾选要下载的剧集。",
+    "description": "No selected episodes warning."
+  },
+  "invalidSelectFirstCount": {
+    "message": "请输入有效的剧集数量。",
+    "description": "Invalid first N selection count."
+  },
+  "selectedFirstCount": {
+    "message": "已勾选前 $count$ 条剧集。",
+    "description": "Selected first N status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "selectionUpdated": {
+    "message": "已勾选剧集：$count$",
+    "description": "Selected count status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "5"
+      }
+    }
+  },
+  "selectionCleared": {
+    "message": "已清空勾选。",
+    "description": "Selection cleared status."
+  },
+  "selectedMissingAudioFallback": {
+    "message": "已选剧集中有 $count$ 条未读取到音频链接，将尝试页面回退解析。",
+    "description": "Selected episodes missing cached audio URL warning.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "resolvingSelectedAudioLinks": {
+    "message": "正在为 $count$ 条已选剧集获取音频链接...",
+    "description": "Selected episodes missing cached audio URL are being resolved.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "noAudioLinksResolved": {
+    "message": "未能解析任何音频链接。请保持 ListenNotes 页面打开后重试，或改用普通下载。",
+    "description": "No selected episodes could be resolved to audio links."
+  },
+  "submittingDownloads": {
+    "message": "正在将 $count$ 条播客提交到后台处理...",
+    "description": "Download submission status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "queueAdded": {
+    "message": "已加入下载队列：$count$ 条",
+    "description": "Queue added status.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "12"
+      }
+    }
+  },
+  "openingManagerWindow": {
+    "message": "正在打开独立插件窗口继续下载...",
+    "description": "Shown before opening the persistent manager window."
+  },
+  "managerWindowOpened": {
+    "message": "已在独立插件窗口中继续。",
+    "description": "Shown after the persistent manager window is opened."
+  },
+  "managerWindowOpenFailed": {
+    "message": "独立插件窗口打开失败。",
+    "description": "Fallback error when the persistent manager window cannot be opened."
+  },
+  "downloadFailed": {
+    "message": "下载失败：$error$",
+    "description": "Download failure message.",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Content script did not respond"
+      }
+    }
+  },
+  "zipDownloadButton": {
+    "message": "打包ZIP",
+    "description": "ZIP download button."
+  },
+  "zipIdle": {
+    "message": "ZIP 空闲",
+    "description": "ZIP idle status."
+  },
+  "zipPreparing": {
+    "message": "正在准备 ZIP：$current$/$total$",
+    "description": "ZIP resolving status.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" }
+    }
+  },
+  "zipFetching": {
+    "message": "正在获取音频：$current$/$total$",
+    "description": "ZIP fetching status.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" }
+    }
+  },
+  "zipGenerating": {
+    "message": "正在生成 ZIP...",
+    "description": "ZIP generation status."
+  },
+  "zipReady": {
+    "message": "ZIP 已准备好，请选择保存位置。",
+    "description": "ZIP ready status."
+  },
+  "zipTooLarge": {
+    "message": "ZIP 体积过大，请改用普通下载。",
+    "description": "ZIP size limit status."
+  },
+  "zipFailed": {
+    "message": "ZIP 失败：$error$",
+    "description": "ZIP failure status.",
+    "placeholders": {
+      "error": {
+        "content": "$1",
+        "example": "Network failed"
+      }
+    }
+  },
+  "zipBuilderConnectionClosed": {
+    "message": "ZIP 构建器连接中断。请重试，或改用普通下载。",
+    "description": "ZIP builder connection failure detail."
+  },
+  "zipAudioConnectionClosed": {
+    "message": "音频源连接关闭或拒绝 ZIP 抓取。请改用普通下载。",
+    "description": "ZIP audio fetch connection failure detail."
+  },
+  "zipAllAudioFetchFailed": {
+    "message": "所选音频都无法用于 ZIP 抓取。请改用普通下载。",
+    "description": "All selected audio files failed in ZIP mode."
+  },
+  "zipNeedsAudioLinks": {
+    "message": "已选剧集都没有读取到音频链接。请重新扫描页面后再创建 ZIP。",
+    "description": "ZIP blocked because no selected episode has a cached audio URL."
+  },
+  "downloadTaskBusy": {
+    "message": "普通下载任务正在进行中。",
+    "description": "Shown when ZIP is disabled by a running regular download task."
+  },
+  "zipTaskBusy": {
+    "message": "ZIP 任务正在进行中。",
+    "description": "Shown when regular download is disabled by a running ZIP task."
+  },
+  "cancelTaskButton": {
+    "message": "停止",
+    "description": "Button label for stopping the current ZIP task."
+  },
+  "cancelEpisodeButton": {
+    "message": "取消",
+    "description": "Button label for cancelling one regular download item."
+  },
+  "cancelledStatus": {
+    "message": "已取消。",
+    "description": "Shown after cancelling a regular download item."
+  },
+  "zipCancelled": {
+    "message": "ZIP 已停止。",
+    "description": "ZIP task cancelled status."
+  },
+  "taskProgressLabel": {
+    "message": "当前任务进度",
+    "description": "Current task progress region label."
+  },
+  "taskProgressIdle": {
+    "message": "当前任务空闲",
+    "description": "Idle current task progress text."
+  },
+  "taskProgressDownload": {
+    "message": "下载进度：$loaded$ / $bytesTotal$（$percent$%）",
+    "description": "Regular download task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" }
+    }
+  },
+  "taskProgressZip": {
+    "message": "ZIP 进度：$loaded$ / $bytesTotal$（$percent$%）",
+    "description": "ZIP task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" }
+    }
+  },
+  "taskProgressDownloadUnknown": {
+    "message": "下载进度：$loaded$ / $bytesTotal$（$percent$%，包含未知大小文件）",
+    "description": "Regular download byte progress text when some files have unknown sizes.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" },
+      "unknown": { "content": "$6", "example": "2" }
+    }
+  },
+  "taskProgressZipUnknown": {
+    "message": "ZIP 进度：$loaded$ / $bytesTotal$（$percent$%，包含未知大小文件）",
+    "description": "ZIP byte progress text when some files have unknown sizes.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "2" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "17" },
+      "loaded": { "content": "$4", "example": "40 MB" },
+      "bytesTotal": { "content": "$5", "example": "100 MB" },
+      "unknown": { "content": "$6", "example": "2" }
+    }
+  },
+  "taskProgressComplete": {
+    "message": "当前任务完成：$current$/$total$（$percent$%）",
+    "description": "Completed current task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "12" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "100" }
+    }
+  },
+  "taskProgressError": {
+    "message": "当前任务失败：$current$/$total$（$percent$%）",
+    "description": "Failed current task progress text.",
+    "placeholders": {
+      "current": { "content": "$1", "example": "5" },
+      "total": { "content": "$2", "example": "12" },
+      "percent": { "content": "$3", "example": "42" }
+    }
+  },
+  "missingAudioStatus": {
+    "message": "已选剧集中有 $count$ 条缺少音频链接，将直接跳过。",
+    "description": "Selected episodes missing cached audio URL will be skipped.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+  "unknownError": {
+    "message": "未知错误",
+    "description": "Unknown error fallback."
+  },
+  "resetDone": {
+    "message": "已重置",
+    "description": "Reset status."
+  }
+}
