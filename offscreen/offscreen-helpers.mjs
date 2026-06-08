@@ -33,12 +33,14 @@ function assertNotAborted(controller) {
   }
 }
 
-async function readResponseBuffer(response, onProgress = () => {}) {
+async function readResponseBuffer(response, onProgress = () => {}, controller) {
   const totalHeader = Number(response.headers?.get?.('content-length'));
   const total = Number.isFinite(totalHeader) && totalHeader >= 0 ? totalHeader : null;
 
   if (!response.body?.getReader) {
+    assertNotAborted(controller);
     const buffer = await response.arrayBuffer();
+    assertNotAborted(controller);
     onProgress({ loaded: buffer.byteLength, total, delta: buffer.byteLength });
     return buffer;
   }
@@ -47,13 +49,29 @@ async function readResponseBuffer(response, onProgress = () => {}) {
   const chunks = [];
   let loaded = 0;
 
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    const chunk = value instanceof Uint8Array ? value : new Uint8Array(value);
-    chunks.push(chunk);
-    loaded += chunk.byteLength;
-    onProgress({ loaded, total, delta: chunk.byteLength });
+  try {
+    while (true) {
+      assertNotAborted(controller);
+      const { done, value } = await reader.read();
+      assertNotAborted(controller);
+      if (done) break;
+      const chunk = value instanceof Uint8Array ? value : new Uint8Array(value);
+      chunks.push(chunk);
+      loaded += chunk.byteLength;
+      onProgress({ loaded, total, delta: chunk.byteLength });
+      assertNotAborted(controller);
+    }
+  } catch (error) {
+    if (isAbortError(error, controller) || /aborted/i.test(error.message || '')) {
+      try {
+        await reader.cancel(error);
+      } catch {}
+    }
+    throw error;
+  } finally {
+    try {
+      reader.releaseLock();
+    } catch {}
   }
 
   const result = new Uint8Array(loaded);
@@ -87,7 +105,7 @@ export async function fetchEntry(entry, deps = {}) {
       throw new Error(`HTTP ${response?.status || 0} ${response?.statusText || ''}`.trim());
     }
 
-    return readResponseBuffer(response, onProgress);
+    return readResponseBuffer(response, onProgress, controller);
   } catch (error) {
     if (isAbortError(error, controller)) {
       throw new Error(ABORTED_MESSAGE);

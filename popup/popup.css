@@ -29,10 +29,20 @@ body {
     #ffffff;
 }
 
+body.is-manager-window {
+  width: 100%;
+  min-width: 380px;
+}
+
 .wrap {
   width: 380px;
   min-height: 520px;
   padding: 16px;
+}
+
+body.is-manager-window .wrap {
+  width: 100%;
+  min-height: 100vh;
 }
 
 .hero {
@@ -269,7 +279,7 @@ summary:focus-visible,
 
 .stats {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 8px;
   margin-top: 12px;
 }
@@ -351,29 +361,28 @@ summary:focus-visible,
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
   margin-top: 11px;
-  color: rgba(255, 255, 255, 0.62);
+  color: rgba(255, 255, 255, 0.5);
   font-size: 9px;
   line-height: 1.1;
 }
 
 .pipeline span {
   min-width: 0;
-  padding: 6px 5px;
+  padding: 5px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid rgba(255, 255, 255, 0.075);
   border-radius: 4px;
   overflow-wrap: anywhere;
 }
 
 .pipeline strong {
   display: block;
-  margin-top: 4px;
-  color: #ffffff;
+  margin-top: 3px;
+  color: rgba(255, 255, 255, 0.78);
   font-family: var(--font);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 500;
-  letter-spacing: -0.16px;
 }
 
 .task-progress-panel {
@@ -495,10 +504,18 @@ summary::-webkit-details-marker {
 #list {
   max-height: 198px;
   margin: 0;
-  padding: 0;
-  overflow: auto;
+  padding-block: 0;
+  padding-inline-start: 0;
+  padding-inline-end: 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
   list-style: none;
   border-top: 1px solid var(--border);
+}
+
+body.is-manager-window #list {
+  padding-inline-end: 12px;
 }
 
 #list .item {
@@ -551,6 +568,23 @@ summary::-webkit-details-marker {
   background: rgba(0, 0, 0, 0.04);
 }
 
+.episode-status {
+  padding: 4px 6px;
+  color: rgba(1, 1, 32, 0.72);
+  font-size: 9px;
+  line-height: 1;
+  background: rgba(1, 1, 32, 0.06);
+  border: 1px solid rgba(1, 1, 32, 0.08);
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.episode-status-cancelling {
+  color: var(--midnight);
+  background: rgba(252, 76, 2, 0.1);
+  border-color: rgba(252, 76, 2, 0.18);
+}
+
 .episode-cancel {
   width: 24px;
   height: 24px;
@@ -562,4 +596,15 @@ summary::-webkit-details-marker {
   border: 1px solid rgba(252, 76, 2, 0.2);
   border-radius: 4px;
   cursor: pointer;
+}
+
+.episode-cancel:hover {
+  color: #ffffff;
+  background: rgba(252, 76, 2, 0.86);
+  border-color: rgba(252, 76, 2, 0.92);
+}
+
+.episode-cancel:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
 }

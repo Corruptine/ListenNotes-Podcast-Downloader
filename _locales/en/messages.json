@@ -20,11 +20,11 @@
     "description": "Language picker label."
   },
   "heroTitle": {
-    "message": "Batch Downloader",
+    "message": "Podcast Downloader",
     "description": "Popup title."
   },
   "statusNotScanned": {
-    "message": "Not scanned yet",
+    "message": "Scan this podcast page to begin",
     "description": "Initial status."
   },
   "actionsAriaLabel": {
@@ -52,11 +52,11 @@
     "description": "Scanned count label."
   },
   "statSelected": {
-    "message": "Selected",
+    "message": "Chosen",
     "description": "Selected count label."
   },
   "statAudioLinks": {
-    "message": "Audio",
+    "message": "Audio links",
     "description": "Captured audio URL count label."
   },
   "statQueue": {
@@ -72,7 +72,7 @@
     "description": "Error count label."
   },
   "statMissingAudio": {
-    "message": "Missing",
+    "message": "No audio",
     "description": "Missing audio URL count label."
   },
   "techPanelAriaLabel": {
@@ -80,7 +80,7 @@
     "description": "Tech panel label."
   },
   "downloadPathLabel": {
-    "message": "Download Path",
+    "message": "Save Location",
     "description": "Download path label."
   },
   "stateIdle": {
@@ -92,7 +92,7 @@
     "description": "Running state."
   },
   "defaultDirUnknown": {
-    "message": "Not inferred yet",
+    "message": "Waiting for browser location",
     "description": "Default directory fallback."
   },
   "pipelineAriaLabel": {
@@ -100,11 +100,11 @@
     "description": "Pipeline label."
   },
   "pipelineGettingUrl": {
-    "message": "Get URL",
+    "message": "Get links",
     "description": "Getting URL status."
   },
   "pipelineResolving": {
-    "message": "Resolve",
+    "message": "Prepare",
     "description": "Resolving status."
   },
   "pipelineDownloading": {
@@ -116,7 +116,7 @@
     "description": "Submitted status."
   },
   "episodesSummary": {
-    "message": "View captured episodes",
+    "message": "Episode list",
     "description": "Details summary label."
   },
   "episodePage": {
@@ -190,11 +190,11 @@
     "description": "Selection controls section label."
   },
   "selectFirstLabel": {
-    "message": "First N",
+    "message": "First episodes",
     "description": "Select first N input label."
   },
   "selectFirstButton": {
-    "message": "Pick",
+    "message": "Add",
     "description": "Select first N button."
   },
   "selectAllButton": {
@@ -226,12 +226,16 @@
     "description": "Invalid first N selection count."
   },
   "selectedFirstCount": {
-    "message": "Selected the first $count$ episodes.",
+    "message": "Added the first $count$ episodes. $selected$ selected now.",
     "description": "Selected first N status.",
     "placeholders": {
       "count": {
         "content": "$1",
         "example": "5"
+      },
+      "selected": {
+        "content": "$2",
+        "example": "8"
       }
     }
   },
@@ -250,7 +254,7 @@
     "description": "Selection cleared status."
   },
   "selectedMissingAudioFallback": {
-    "message": "$count$ selected episodes have no captured audio link. The extension will try page fallback parsing.",
+    "message": "$count$ selected episodes still need audio links. The extension will keep trying.",
     "description": "Selected episodes missing cached audio URL warning.",
     "placeholders": {
       "count": {
@@ -397,6 +401,10 @@
     "message": "Cancelled.",
     "description": "Shown after cancelling a regular download item."
   },
+  "cancellingStatus": {
+    "message": "Cancelling this episode...",
+    "description": "Shown while cancelling a regular download item."
+  },
   "zipCancelled": {
     "message": "ZIP cancelled.",
     "description": "ZIP task cancelled status."
@@ -406,7 +414,7 @@
     "description": "Current task progress region label."
   },
   "taskProgressIdle": {
-    "message": "Current task idle",
+    "message": "No download task",
     "description": "Idle current task progress text."
   },
   "taskProgressDownload": {

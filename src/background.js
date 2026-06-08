@@ -2,13 +2,16 @@ import {
   applyDownloadDelta,
   applyReadyToSaveResult,
   assertAnyResolvedEpisodes,
+  assertNotAborted,
   assertZipSizeWithinLimit,
   assertResolveDepth,
   buildPersistedState,
+  CANCELLED_STATUS,
   collectDownloadIdsForCancellation,
   buildZipEntries,
   buildZipFilename,
   cleanupResults,
+  createAbortSignalScope,
   createInitialState,
   createIdleTask,
   deriveDownloadTaskCurrent,
@@ -19,9 +22,11 @@ import {
   getKey,
   getStatus as buildStatus,
   isDirectMediaUrl,
-  isCancelledResult,
+  isCancellationRequested,
+  isDownloadCancellationError,
   isMissingAudioUrlError,
   isSupportedAudioDownloadUrl,
+  markDownloadCancellationRequested,
   MAX_ZIP_SOURCE_BYTES,
   mergePersistedState,
   pickAudioExtension,
@@ -39,10 +44,15 @@ const DEBUG = false;
 const SESSION_STATE_KEY = 'listenNotesDownloaderState';
 const DOWNLOAD_NOT_STARTED_CODE = 'DOWNLOAD_NOT_STARTED';
 const STALE_TASK_CODE = 'STALE_TASK';
+const AUDIO_PROGRESS_NOTIFY_INTERVAL_MS = 250;
 const state = createInitialState();
 let managerWindowId = null;
 let taskGeneration = 0;
 let activeZipTaskId = null;
+let lastAudioProgressNotificationAt = 0;
+let pendingAudioProgressTimerId = null;
+const activeDownloadControllersByKey = new Map();
+const activeDownloadControllersByTaskId = new Map();
 
 function debug(tag, message, extra) {
   if (!DEBUG) return;
@@ -75,6 +85,33 @@ function isStaleTaskError(error) {
   return error?.code === STALE_TASK_CODE;
 }
 
+function registerDownloadController(key, taskId, controller) {
+  if (key) activeDownloadControllersByKey.set(key, controller);
+  if (taskId) activeDownloadControllersByTaskId.set(taskId, controller);
+}
+
+function unregisterDownloadController(key, taskId, controller) {
+  if (key && activeDownloadControllersByKey.get(key) === controller) {
+    activeDownloadControllersByKey.delete(key);
+  }
+  if (taskId && activeDownloadControllersByTaskId.get(taskId) === controller) {
+    activeDownloadControllersByTaskId.delete(taskId);
+  }
+}
+
+function abortDownloadController(key, taskId) {
+  const controllers = new Set([
+    key ? activeDownloadControllersByKey.get(key) : null,
+    taskId ? activeDownloadControllersByTaskId.get(taskId) : null,
+  ].filter(Boolean));
+
+  for (const controller of controllers) {
+    if (!controller.signal.aborted) controller.abort();
+  }
+
+  return controllers.size > 0;
+}
+
 function getStatus() {
   return buildStatus(state);
 }
@@ -88,6 +125,31 @@ function sendProgress(type = 'BG_PROGRESS', extra = {}) {
   } catch (e) {
     debug('Progress', `No listener for ${type}: ${e.message}`);
   }
+}
+
+function sendAudioProgressSoon() {
+  const now = Date.now();
+  const elapsed = now - lastAudioProgressNotificationAt;
+
+  if (elapsed >= AUDIO_PROGRESS_NOTIFY_INTERVAL_MS) {
+    lastAudioProgressNotificationAt = now;
+    sendProgress('BG_PROGRESS', { progressOnly: true });
+    return;
+  }
+
+  if (pendingAudioProgressTimerId != null) return;
+
+  pendingAudioProgressTimerId = setTimeout(() => {
+    pendingAudioProgressTimerId = null;
+    lastAudioProgressNotificationAt = Date.now();
+    sendProgress('BG_PROGRESS', { progressOnly: true });
+  }, AUDIO_PROGRESS_NOTIFY_INTERVAL_MS - elapsed);
+}
+
+function clearAudioProgressNotification() {
+  if (pendingAudioProgressTimerId == null) return;
+  clearTimeout(pendingAudioProgressTimerId);
+  pendingAudioProgressTimerId = null;
 }
 
 function persistState() {
@@ -199,6 +261,15 @@ async function resetBackgroundState() {
   const targets = getResetTargets();
   taskGeneration += 1;
   activeZipTaskId = null;
+  clearAudioProgressNotification();
+  for (const controller of new Set([
+    ...activeDownloadControllersByKey.values(),
+    ...activeDownloadControllersByTaskId.values(),
+  ])) {
+    if (!controller.signal.aborted) controller.abort();
+  }
+  activeDownloadControllersByKey.clear();
+  activeDownloadControllersByTaskId.clear();
   resetStateFields();
   persistState();
 
@@ -317,13 +388,16 @@ async function openManagerWindow(action) {
 })();
 
 async function fetchWithTimeout(url, options = {}, timeoutMs = 15000) {
-  const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  const {
+    signal,
+    ...fetchOptions
+  } = options;
+  const abortScope = createAbortSignalScope({ signal, timeoutMs });
 
   try {
-    return await fetch(url, { ...options, signal: controller.signal });
+    return await fetch(url, { ...fetchOptions, signal: abortScope.signal });
   } finally {
-    clearTimeout(timeoutId);
+    abortScope.cleanup();
   }
 }
 
@@ -342,24 +416,29 @@ function assertHttpUrl(url) {
   return parsed.href;
 }
 
-async function fetchRssText(url) {
+async function fetchRssText(url, options = {}) {
+  const { signal } = options;
   const rssUrl = assertHttpUrl(url);
   const response = await fetchWithTimeout(rssUrl, {
     credentials: 'omit',
     redirect: 'follow',
+    signal,
   }, 15000);
 
   if (!response.ok) {
     throw new Error(`RSS fetch failed with HTTP ${response.status}`);
   }
 
+  assertNotAborted(signal);
   return response.text();
 }
 
-async function resolveRssFinalUrl(audioUrl) {
+async function resolveRssFinalUrl(audioUrl, options = {}) {
+  const { signal } = options;
   const response = await fetchWithTimeout(audioUrl, {
     credentials: 'omit',
     redirect: 'follow',
+    signal,
   }, 15000);
 
   if (!response.ok) {
@@ -372,6 +451,7 @@ async function resolveRssFinalUrl(audioUrl) {
     ? await response.text()
     : '';
 
+  assertNotAborted(signal);
   return resolveRssEnclosureFinalUrl({
     requestUrl: audioUrl,
     responseUrl: response.url || '',
@@ -380,21 +460,25 @@ async function resolveRssFinalUrl(audioUrl) {
   });
 }
 
-async function resolveFinalUrl(audioPageUrl, depth = 0, source = '') {
+async function resolveFinalUrl(audioPageUrl, depth = 0, source = '', options = {}) {
+  const { signal } = options;
   assertResolveDepth(depth);
+  assertNotAborted(signal);
   debug('ResolveURL', `Resolving depth ${depth}: ${audioPageUrl}`);
 
   if (isSupportedAudioDownloadUrl(audioPageUrl)) return audioPageUrl;
-  if (source === 'rss') return resolveRssFinalUrl(audioPageUrl);
+  if (source === 'rss') return resolveRssFinalUrl(audioPageUrl, { signal });
 
   const response = await fetchWithTimeout(audioPageUrl, {
     credentials: 'omit',
     redirect: 'follow',
+    signal,
   }, 15000);
 
   if (response.url && isDirectMediaUrl(response.url)) return response.url;
 
   const html = await response.text();
+  assertNotAborted(signal);
   const extractedUrl = extractAudioUrlFromHtml(html);
   if (!extractedUrl) {
     throw new Error('Unable to find a direct audio URL in the page');
@@ -441,6 +525,14 @@ async function startBrowserDownload(options) {
   }
 }
 
+async function cancelBrowserDownload(downloadId) {
+  if (!Number.isInteger(downloadId)) return;
+  try {
+    await chrome.downloads.cancel(downloadId);
+  } catch {}
+  delete state.downloadIdToKey[downloadId];
+}
+
 function markDownloadItemCancelled(key, patch = {}) {
   const {
     downloadId: _downloadId,
@@ -450,19 +542,22 @@ function markDownloadItemCancelled(key, patch = {}) {
   state.results[key] = {
     ...currentResult,
     ...patch,
-    status: 'cancelled',
+    status: CANCELLED_STATUS,
     error: 'Cancelled',
     blobUrl: '',
   };
 }
 
-async function resolveEpisodeDownload(ep, statusCallback = () => {}) {
+async function resolveEpisodeDownload(ep, statusCallback = () => {}, options = {}) {
+  const { signal } = options;
   const key = getKey(ep);
   const titleBase = sanitizeFilename(`${ep.channelTitle || 'ListenNotes'} - ${ep.title || ep.episodeId}`);
+  assertNotAborted(signal);
   const { audioUrl, source } = await resolveEpisodeAudioUrl(ep);
 
   statusCallback('resolving');
-  const finalUrl = await resolveFinalUrl(audioUrl, 0, source);
+  const finalUrl = await resolveFinalUrl(audioUrl, 0, source, { signal });
+  assertNotAborted(signal);
   const filename = `${titleBase}.${pickAudioExtension(finalUrl)}`;
 
   return { ...ep, key, finalUrl, filename };
@@ -471,16 +566,27 @@ async function resolveEpisodeDownload(ep, statusCallback = () => {}) {
 async function processOneEpisode(ep, generation = taskGeneration) {
   const key = getKey(ep);
   const taskId = `audio:${Date.now()}:${Math.random().toString(16).slice(2)}`;
+  const controller = new AbortController();
+  registerDownloadController(key, taskId, controller);
 
   try {
     if (isStaleGeneration(generation)) throw createStaleTaskError();
+    state.results[key] = {
+      ...state.results[key],
+      taskId,
+    };
+    persistState();
     const resolved = await resolveEpisodeDownload(ep, (status) => {
       if (isStaleGeneration(generation)) return;
+      if (isCancellationRequested(state.results[key])) return;
       state.results[key] = { ...state.results[key], status };
       persistState();
-    });
+    }, { signal: controller.signal });
+    assertNotAborted(controller.signal);
     if (isStaleGeneration(generation)) throw createStaleTaskError();
-    if (state.results[key]?.status === 'cancelled') {
+    if (isCancellationRequested(state.results[key])) {
+      markDownloadItemCancelled(key);
+      persistState();
       return { ok: false, error: 'Cancelled' };
     }
 
@@ -498,23 +604,28 @@ async function processOneEpisode(ep, generation = taskGeneration) {
       name: resolved.filename,
       url: resolved.finalUrl,
     };
-    const contentLength = await estimateEntryContentLength(entry);
+    const contentLength = await estimateEntryContentLength(entry, { signal: controller.signal });
+    assertNotAborted(controller.signal);
     if (isStaleGeneration(generation)) throw createStaleTaskError();
-    if (state.results[key]?.status === 'cancelled') {
+    if (isCancellationRequested(state.results[key])) {
+      markDownloadItemCancelled(key);
+      persistState();
       return { ok: false, error: 'Cancelled' };
     }
     applyEntryEstimate(contentLength);
-    const blobResponse = await requestAudioBlob(entry, key, taskId);
+    const blobResponse = await requestAudioBlob(entry, key, taskId, { signal: controller.signal });
     if (isStaleGeneration(generation)) {
       if (blobResponse?.blobUrl) revokeZipBlobUrl(blobResponse.blobUrl);
       throw createStaleTaskError();
     }
+    assertNotAborted(controller.signal);
     if (!blobResponse?.ok) {
       throw new Error(blobResponse?.error || 'Failed to fetch audio before saving');
     }
 
-    if (isCancelledResult(state.results[key])) {
+    if (isCancellationRequested(state.results[key])) {
       if (blobResponse.blobUrl) revokeZipBlobUrl(blobResponse.blobUrl);
+      markDownloadItemCancelled(key);
       persistState();
       return { ok: false, error: 'Cancelled' };
     }
@@ -533,8 +644,9 @@ async function processOneEpisode(ep, generation = taskGeneration) {
     }
     persistState();
 
-    if (isCancelledResult(state.results[key])) {
+    if (isCancellationRequested(state.results[key])) {
       if (blobResponse.blobUrl) revokeZipBlobUrl(blobResponse.blobUrl);
+      markDownloadItemCancelled(key);
       persistState();
       return { ok: false, error: 'Cancelled' };
     }
@@ -545,12 +657,15 @@ async function processOneEpisode(ep, generation = taskGeneration) {
         revokeZipBlobUrl(blobResponse.blobUrl);
         throw createStaleTaskError();
       }
+      assertNotAborted(controller.signal);
       downloadId = await startBrowserDownload({
         url: blobResponse.blobUrl,
         filename: resolved.filename,
         saveAs: true,
         conflictAction: 'uniquify',
       });
+      state.downloadIdToKey[downloadId] = key;
+      persistState();
     } catch (error) {
       if (isDownloadNotStartedError(error)) {
         revokeZipBlobUrl(blobResponse.blobUrl);
@@ -565,17 +680,13 @@ async function processOneEpisode(ep, generation = taskGeneration) {
     }
 
     if (isStaleGeneration(generation)) {
-      try {
-        if (Number.isInteger(downloadId)) await chrome.downloads.cancel(downloadId);
-      } catch {}
+      await cancelBrowserDownload(downloadId);
       revokeZipBlobUrl(blobResponse.blobUrl);
       throw createStaleTaskError();
     }
 
-    if (state.results[key]?.status === 'cancelled') {
-      try {
-        if (Number.isInteger(downloadId)) await chrome.downloads.cancel(downloadId);
-      } catch {}
+    if (isCancellationRequested(state.results[key])) {
+      await cancelBrowserDownload(downloadId);
       revokeZipBlobUrl(blobResponse.blobUrl);
       markDownloadItemCancelled(key, {
         finalUrl: resolved.finalUrl,
@@ -585,7 +696,6 @@ async function processOneEpisode(ep, generation = taskGeneration) {
       return { ok: false, error: 'Cancelled' };
     }
 
-    state.downloadIdToKey[downloadId] = key;
     state.results[key] = {
       ...state.results[key],
       status: 'save_prompt',
@@ -601,11 +711,13 @@ async function processOneEpisode(ep, generation = taskGeneration) {
     if (isStaleTaskError(error) || isStaleGeneration(generation)) {
       return { ok: false, error: 'Cancelled' };
     }
-    logError('ProcessOne', `[${ep.title || ep.episodeId}] failed`, error);
-    if (state.results[key]?.status === 'cancelled') {
+    if (isCancellationRequested(state.results[key]) || isDownloadCancellationError(error)) {
+      if (state.results[key]?.blobUrl) revokeZipBlobUrl(state.results[key].blobUrl);
+      markDownloadItemCancelled(key);
       persistState();
       return { ok: false, error: 'Cancelled' };
     }
+    logError('ProcessOne', `[${ep.title || ep.episodeId}] failed`, error);
     if (state.results[key]?.blobUrl) revokeZipBlobUrl(state.results[key].blobUrl);
     const {
       downloadId: _downloadId,
@@ -620,6 +732,8 @@ async function processOneEpisode(ep, generation = taskGeneration) {
     };
     persistState();
     return { ok: false, error: error.message };
+  } finally {
+    unregisterDownloadController(key, taskId, controller);
   }
 }
 
@@ -667,26 +781,73 @@ async function requestZipBuild(entries, errors, filename, taskId = 'zip') {
   return assertZipBuildResponse(response);
 }
 
-async function requestAudioBlob(entry, key, taskId) {
+function createAbortRejection(signal, onAbort = () => {}) {
+  if (!signal) return null;
+  let removeAbortListener = () => {};
+  const promise = new Promise((_, reject) => {
+    const rejectAbort = () => {
+      onAbort();
+      reject(signal.reason || new Error('Operation aborted'));
+    };
+
+    if (signal.aborted) {
+      rejectAbort();
+      return;
+    }
+
+    signal.addEventListener('abort', rejectAbort, { once: true });
+    removeAbortListener = () => signal.removeEventListener('abort', rejectAbort);
+  });
+
+  return {
+    promise,
+    cleanup: removeAbortListener,
+  };
+}
+
+async function requestAudioBlob(entry, key, taskId, options = {}) {
+  const { signal } = options;
+  assertNotAborted(signal);
   await ensureOffscreenDocument();
-  return chrome.runtime.sendMessage({
+  assertNotAborted(signal);
+
+  const request = chrome.runtime.sendMessage({
     type: 'OFFSCREEN_FETCH_AUDIO',
     entry,
     key,
     taskId,
   });
+  const abortRejection = createAbortRejection(signal, () => {
+    chrome.runtime.sendMessage({
+      type: 'OFFSCREEN_CANCEL_FETCH',
+      taskId,
+    }).catch(() => {});
+  });
+
+  if (!abortRejection) return request;
+
+  try {
+    return await Promise.race([request, abortRejection.promise]);
+  } finally {
+    abortRejection.cleanup();
+  }
 }
 
-async function estimateEntryContentLength(entry) {
+async function estimateEntryContentLength(entry, options = {}) {
+  const { signal } = options;
   try {
+    assertNotAborted(signal);
     const response = await fetchWithTimeout(entry.url, {
       method: 'HEAD',
       credentials: 'omit',
       redirect: 'follow',
+      signal,
     }, 10000);
+    assertNotAborted(signal);
     const value = Number(response.headers.get('content-length'));
     return Number.isFinite(value) && value >= 0 ? value : null;
   } catch (error) {
+    if (isDownloadCancellationError(error)) throw error;
     debug('Preflight', `Unable to estimate ${entry.name}: ${error.message}`);
     return null;
   }
@@ -897,18 +1058,39 @@ async function pumpQueue(generation = taskGeneration) {
 
 async function cancelDownloadItem(key) {
   const itemKey = String(key || '');
-  if (!itemKey || !state.results[itemKey]) {
+  if (!itemKey) {
     throw new Error('Download item was not found');
   }
 
-  state.queue = state.queue.filter((ep) => getKey(ep) !== itemKey);
-  const result = state.results[itemKey];
+  if (!state.results[itemKey]) {
+    console.info('[ListenNotes Downloader] background cancel item missing', { key: itemKey });
+    return { ok: true, status: getStatus() };
+  }
 
-  if (result.taskId) {
+  const result = state.results[itemKey];
+  console.info('[ListenNotes Downloader] background cancel item', {
+    key: itemKey,
+    status: result.status || '',
+    taskId: result.taskId || '',
+    downloadId: result.downloadId ?? null,
+    hasController: Boolean(activeDownloadControllersByKey.get(itemKey) || activeDownloadControllersByTaskId.get(result.taskId)),
+  });
+  if (isCancellationRequested(result)) {
+    return { ok: true, status: getStatus() };
+  }
+
+  clearAudioProgressNotification();
+  abortDownloadController(itemKey, result.taskId);
+  markDownloadCancellationRequested(state, itemKey);
+  persistState();
+  sendProgress();
+
+  const cancellingResult = state.results[itemKey] || result;
+  if (result.taskId || cancellingResult.taskId) {
     try {
       await chrome.runtime.sendMessage({
         type: 'OFFSCREEN_CANCEL_FETCH',
-        taskId: result.taskId,
+        taskId: result.taskId || cancellingResult.taskId,
       });
     } catch {}
   }
@@ -932,7 +1114,7 @@ async function cancelDownloadItem(key) {
   } = latestResult;
   state.results[itemKey] = {
     ...currentResult,
-    status: 'cancelled',
+    status: CANCELLED_STATUS,
     error: 'Cancelled',
     blobUrl: '',
   };
@@ -1048,14 +1230,21 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     const delta = Number(msg.delta || 0);
     const key = String(msg.key || '');
     const taskId = String(msg.taskId || '');
+    const result = state.results?.[key];
     if (
       delta > 0
       && state.task?.kind === 'download'
       && key
       && taskId
-      && state.results?.[key]?.taskId === taskId
+      && result?.taskId === taskId
+      && !isCancellationRequested(result)
     ) {
-      updateTaskProgress({ bytesLoaded: (state.task.bytesLoaded || 0) + delta });
+      state.task = {
+        ...state.task,
+        bytesLoaded: (state.task.bytesLoaded || 0) + delta,
+      };
+      persistState();
+      sendAudioProgressSoon();
     }
     return false;
   }

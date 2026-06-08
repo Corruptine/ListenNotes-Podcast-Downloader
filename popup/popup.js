@@ -2,6 +2,8 @@ import {
   buildTaskProgressModel,
   createEpisodeListItem,
   isListenNotesPodcastUrl,
+  replaceChildrenPreservingScroll,
+  shouldRenderEpisodeList,
 } from './popup-helpers.mjs';
 import {
   buildTranslator,
@@ -10,7 +12,6 @@ import {
   normalizeLocale,
 } from './popup-i18n.mjs';
 import {
-  countEpisodesWithAudioUrl,
   countEpisodesWithoutAudioUrl,
   DEFAULT_LIST_ORDER,
   getEpisodeKey,
@@ -57,14 +58,12 @@ const els = {
   list: $('#list'),
   count: $('#count'),
   selectedCount: $('#selectedCount'),
-  audioUrlCount: $('#audioUrlCount'),
   selectFirstCount: $('#selectFirstCount'),
   defaultDir: $('#defaultDir'),
   scannedCount: $('#scannedCount'),
   queueCount: $('#queueCount'),
   completeCount: $('#completeCount'),
   errorCount: $('#errorCount'),
-  missingAudioCount: $('#missingAudioCount'),
   gettingUrlCount: $('#gettingUrlCount'),
   resolvingCount: $('#resolvingCount'),
   downloadingCount: $('#downloadingCount'),
@@ -89,6 +88,7 @@ let infoParams = {};
 let latestStatus = {};
 
 const isManagerWindow = new URLSearchParams(window.location.search).get('mode') === 'window';
+document.body.classList.toggle('is-manager-window', isManagerWindow);
 
 function getRuntimeUrl(path) {
   if (chrome.runtime?.getURL) return chrome.runtime.getURL(path);
@@ -221,10 +221,6 @@ function renderSelectedCount() {
   els.selectedCount.textContent = String(getSelectedEpisodeList().length);
 }
 
-function renderAudioUrlCount() {
-  els.audioUrlCount.textContent = String(countEpisodesWithAudioUrl(lastEpisodes));
-}
-
 function renderListOrderToggle() {
   const isReverseOrder = listOrder === REVERSE_LIST_ORDER;
   const label = isReverseOrder
@@ -238,25 +234,26 @@ function renderListOrderToggle() {
 }
 
 function renderList(episodes) {
-  els.list.replaceChildren();
+  const listItems = [];
   for (const ep of getOrderedEpisodes(episodes, listOrder)) {
     const key = getEpisodeKey(ep);
-    els.list.appendChild(createEpisodeListItem(document, ep, {
+    listItems.push(createEpisodeListItem(document, ep, {
       episodePageLabel: t('episodePage'),
       untitledEpisodeLabel: t('untitledEpisode'),
       selectEpisodeLabel: t('selectEpisodeLabel'),
       cancelEpisodeLabel: t('cancelEpisodeButton'),
+      cancellingLabel: t('cancellingStatus'),
     }, {
       key,
       checked: selectedEpisodeIds.has(key),
       result: latestStatus.results?.[key],
     }));
   }
+  replaceChildrenPreservingScroll(els.list, ...listItems);
   els.count.textContent = String(episodes.length);
   els.scannedCount.textContent = String(episodes.length);
   els.selectFirstCount.max = episodes.length ? String(episodes.length) : '';
   renderSelectedCount();
-  renderAudioUrlCount();
 }
 
 function setInfo(key, params = {}) {
@@ -405,17 +402,24 @@ async function queueZipDownloads(episodes) {
   return response;
 }
 
-async function refreshStatus() {
+function getEpisodeKeys() {
+  return getOrderedEpisodes(lastEpisodes, listOrder).map((ep) => getEpisodeKey(ep));
+}
+
+async function refreshStatus(options = {}) {
+  const {
+    renderEpisodes = true,
+  } = options;
   try {
     const response = await chrome.runtime.sendMessage({ type: 'BG_STATUS' });
     if (!response?.ok) return;
 
     const s = response.status;
+    const previousStatus = latestStatus;
     latestStatus = s;
     els.queueCount.textContent = String(s.inQueue);
     els.completeCount.textContent = String(s.counts.complete);
     els.errorCount.textContent = String(s.counts.error);
-    els.missingAudioCount.textContent = String(s.counts.missing_audio);
     els.gettingUrlCount.textContent = String(s.counts.getting_url);
     els.resolvingCount.textContent = String(s.counts.resolving);
     els.downloadingCount.textContent = String(
@@ -425,7 +429,12 @@ async function refreshStatus() {
     renderActiveState(s.active > 0 ? 'running' : 'idle');
     renderZipStatus(s);
     renderTaskProgress(s);
-    renderList(lastEpisodes);
+    if (
+      renderEpisodes === true
+      || (renderEpisodes === 'ifChanged' && shouldRenderEpisodeList(previousStatus, s, getEpisodeKeys()))
+    ) {
+      renderList(lastEpisodes);
+    }
 
     if (s.defaultDir) {
       els.defaultDir.textContent = s.defaultDir;
@@ -444,6 +453,26 @@ async function cancelDownloadItem(key) {
   }
   await refreshStatus();
   return response;
+}
+
+function renderOptimisticCancelling(key) {
+  const itemKey = String(key || '');
+  if (!itemKey) return;
+
+  latestStatus = {
+    ...latestStatus,
+    results: {
+      ...(latestStatus.results || {}),
+      [itemKey]: {
+        ...(latestStatus.results?.[itemKey] || {}),
+        status: 'cancelling',
+        error: 'Cancelling',
+        canCancel: false,
+        isCancelling: true,
+      },
+    },
+  };
+  renderList(lastEpisodes);
 }
 
 async function cancelZipTask() {
@@ -579,9 +608,35 @@ function setupListeners() {
   els.list.addEventListener('click', async (event) => {
     const button = event.target?.closest?.('.episode-cancel');
     if (!button) return;
+    const key = button.dataset.episodeId || '';
     try {
+      if (!key || !lastEpisodes.some((ep) => getEpisodeKey(ep) === key)) {
+        throw new Error('Download item was not found');
+      }
+      const cancelStartedAt = performance.now();
+      console.info('[ListenNotes Downloader] cancel click', {
+        key,
+        scrollTop: els.list.scrollTop,
+        status: latestStatus.results?.[key]?.status || '',
+        canCancel: latestStatus.results?.[key]?.canCancel ?? null,
+        isCancelling: latestStatus.results?.[key]?.isCancelling ?? null,
+      });
       button.disabled = true;
-      await cancelDownloadItem(button.dataset.episodeId || '');
+      setInfo('cancellingStatus');
+      renderOptimisticCancelling(key);
+      console.info('[ListenNotes Downloader] cancel request sent', {
+        key,
+        scrollTop: els.list.scrollTop,
+      });
+      await cancelDownloadItem(key);
+      console.info('[ListenNotes Downloader] cancel complete', {
+        key,
+        latencyMs: Math.round(performance.now() - cancelStartedAt),
+        scrollTop: els.list.scrollTop,
+        status: latestStatus.results?.[key]?.status || '',
+        canCancel: latestStatus.results?.[key]?.canCancel ?? null,
+        isCancelling: latestStatus.results?.[key]?.isCancelling ?? null,
+      });
       setInfo('cancelledStatus');
     } catch (e) {
       setInfo('downloadFailed', { error: getErrorMessage(e, t('unknownError')) });
@@ -600,10 +655,13 @@ function setupListeners() {
       return;
     }
 
-    selectedEpisodeIds = selectFirstEpisodes(getVisibleEpisodes(), parsed.count);
+    selectedEpisodeIds = selectFirstEpisodes(getVisibleEpisodes(), parsed.count, selectedEpisodeIds);
     renderList(lastEpisodes);
     void savePopupSessionState();
-    setInfo('selectedFirstCount', { count: getSelectedEpisodeList().length });
+    setInfo('selectedFirstCount', {
+      count: parsed.count,
+      selected: getSelectedEpisodeList().length,
+    });
   });
 
   els.btnSelectAll.addEventListener('click', () => {
@@ -680,10 +738,8 @@ function setupListeners() {
     renderListOrderToggle();
     els.queueCount.textContent = '0';
     els.selectedCount.textContent = '0';
-    els.audioUrlCount.textContent = '0';
     els.completeCount.textContent = '0';
     els.errorCount.textContent = '0';
-    els.missingAudioCount.textContent = '0';
     els.gettingUrlCount.textContent = '0';
     els.resolvingCount.textContent = '0';
     els.downloadingCount.textContent = '0';
@@ -711,7 +767,9 @@ function setupListeners() {
 
   chrome.runtime.onMessage.addListener((msg) => {
     if (msg?.type === 'BG_PROGRESS' || msg?.type === 'BG_DOWNLOAD_COMPLETE' || msg?.type === 'BG_ZIP_PROGRESS') {
-      refreshStatus();
+      refreshStatus({
+        renderEpisodes: msg?.progressOnly ? 'ifChanged' : true,
+      });
     }
     if (msg?.type === 'POPUP_START_ACTION' && isManagerWindow) {
       restoreSavedPopupState()

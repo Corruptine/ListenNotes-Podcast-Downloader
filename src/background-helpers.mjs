@@ -1,4 +1,6 @@
-export const TERMINAL_STATUSES = new Set(['complete', 'error', 'missing_audio', 'cancelled']);
+export const CANCELLED_STATUS = 'cancelled';
+export const CANCELLING_STATUS = 'cancelling';
+export const TERMINAL_STATUSES = new Set(['complete', 'error', 'missing_audio', CANCELLED_STATUS]);
 export const ACTIVE_DOWNLOAD_STATUSES = new Set([
   'pending',
   'resolving',
@@ -7,8 +9,9 @@ export const ACTIVE_DOWNLOAD_STATUSES = new Set([
   'save_prompt',
   'queued_in_downloads',
   'downloading',
+  CANCELLING_STATUS,
 ]);
-export const RETRYABLE_DOWNLOAD_STATUSES = new Set(['error', 'missing_audio', 'cancelled']);
+export const RETRYABLE_DOWNLOAD_STATUSES = new Set(['error', 'missing_audio', CANCELLED_STATUS]);
 export const ZIP_STATUSES = new Set(['idle', 'resolving', 'fetching', 'generating', 'ready', 'error', 'cancelled']);
 export const MAX_ZIP_SOURCE_BYTES = 750 * 1024 * 1024;
 export const NO_AUDIO_LINKS_RESOLVED = 'No selected episodes could be resolved to audio links. Keep the ListenNotes page open and try again, or use regular download.';
@@ -386,7 +389,7 @@ export function deriveDownloadTaskCurrent(state) {
   const keys = Array.isArray(state.task?.keys) ? state.task.keys : [];
   return keys.reduce((count, key) => {
     const status = state.results?.[key]?.status;
-    return ['complete', 'error', 'missing_audio', 'queued_in_downloads', 'save_prompt', 'cancelled'].includes(status)
+    return ['complete', 'error', 'missing_audio', 'queued_in_downloads', 'save_prompt', CANCELLING_STATUS, CANCELLED_STATUS].includes(status)
       ? count + 1
       : count;
   }, 0);
@@ -406,15 +409,102 @@ export function canRequeueEpisode(result) {
 }
 
 export function isCancellableStatus(status) {
-  return isActiveDownloadStatus(status);
+  return isActiveDownloadStatus(status) && status !== CANCELLING_STATUS;
 }
 
 export function isCancelledResult(result) {
-  return result?.status === 'cancelled';
+  return result?.status === CANCELLED_STATUS;
+}
+
+export function isCancellationRequested(result) {
+  return result?.status === CANCELLING_STATUS || result?.status === CANCELLED_STATUS;
+}
+
+export function isDownloadCancellationError(error) {
+  const message = String(error?.message || error || '');
+  return error?.name === 'AbortError'
+    || /operation aborted|bodystreambuffer was aborted|user_canceled|cancelled|canceled/i.test(message);
+}
+
+function createTimeoutError(timeoutMs) {
+  const error = new Error(`Operation timed out after ${timeoutMs / 1000}s`);
+  error.name = 'TimeoutError';
+  return error;
+}
+
+function createAbortError() {
+  try {
+    return new DOMException('Operation aborted', 'AbortError');
+  } catch {
+    const error = new Error('Operation aborted');
+    error.name = 'AbortError';
+    return error;
+  }
+}
+
+export function createAbortSignalScope({
+  signal,
+  timeoutMs = 0,
+  setTimeoutFn = setTimeout,
+  clearTimeoutFn = clearTimeout,
+} = {}) {
+  const controller = new AbortController();
+  let timeoutId = null;
+  let removeAbortListener = () => {};
+
+  const abortOnce = (reason) => {
+    if (controller.signal.aborted) return;
+    controller.abort(reason || createAbortError());
+  };
+
+  if (signal?.aborted) {
+    abortOnce(signal.reason);
+  } else if (signal?.addEventListener) {
+    const onAbort = () => abortOnce(signal.reason);
+    signal.addEventListener('abort', onAbort, { once: true });
+    removeAbortListener = () => signal.removeEventListener('abort', onAbort);
+  }
+
+  if (Number.isFinite(Number(timeoutMs)) && Number(timeoutMs) > 0) {
+    timeoutId = setTimeoutFn(() => abortOnce(createTimeoutError(Number(timeoutMs))), Number(timeoutMs));
+  }
+
+  return {
+    signal: controller.signal,
+    cleanup() {
+      removeAbortListener();
+      if (timeoutId != null) {
+        clearTimeoutFn(timeoutId);
+        timeoutId = null;
+      }
+    },
+  };
+}
+
+export function assertNotAborted(signal) {
+  if (!signal?.aborted) return;
+  throw signal.reason || createAbortError();
+}
+
+export function markDownloadCancellationRequested(state, key) {
+  const itemKey = String(key || '');
+  if (!itemKey || !state?.results?.[itemKey]) return null;
+
+  const result = state.results[itemKey];
+  if (isCancellationRequested(result)) return result;
+
+  state.queue = (Array.isArray(state.queue) ? state.queue : [])
+    .filter((ep) => getKey(ep) !== itemKey);
+  state.results[itemKey] = {
+    ...result,
+    status: CANCELLING_STATUS,
+    error: 'Cancelling',
+  };
+  return state.results[itemKey];
 }
 
 export function applyReadyToSaveResult(state, key, patch = {}) {
-  if (isCancelledResult(state.results?.[key])) return false;
+  if (isCancellationRequested(state.results?.[key])) return false;
 
   state.results[key] = {
     ...state.results[key],
@@ -451,7 +541,8 @@ export function getStatus(state) {
     fetching_audio: 0,
     ready_to_save: 0,
     save_prompt: 0,
-    cancelled: 0,
+    [CANCELLING_STATUS]: 0,
+    [CANCELLED_STATUS]: 0,
   };
 
   for (const key of Object.keys(state.results)) {
@@ -480,6 +571,7 @@ export function getStatus(state) {
       downloadId: result?.downloadId ?? null,
       blobUrl: result?.blobUrl || '',
       canCancel: isCancellableStatus(result?.status),
+      isCancelling: result?.status === CANCELLING_STATUS,
     };
   }
 
@@ -531,7 +623,7 @@ function normalizeRestoredDownloadState(state) {
     const { downloadId: _downloadId, taskId: _taskId, ...rest } = result;
     state.results[key] = {
       ...rest,
-      status: 'cancelled',
+      status: CANCELLED_STATUS,
       error: 'Cancelled',
       blobUrl: '',
     };
@@ -605,16 +697,22 @@ export function enqueueEpisodes(state, episodes, tabId) {
 export function applyDownloadDelta(state, delta) {
   const key = state.downloadIdToKey?.[delta?.id];
   if (!key || !state.results[key]) return false;
+  const currentResult = state.results[key];
+  const isUserCancelled = delta.error?.current === 'USER_CANCELED';
 
   if (delta.state?.current === 'complete') {
-    state.results[key] = { ...state.results[key], status: 'complete', blobUrl: '' };
+    state.results[key] = isCancellationRequested(currentResult)
+      ? { ...currentResult, status: CANCELLED_STATUS, error: 'Cancelled', blobUrl: '' }
+      : { ...currentResult, status: 'complete', blobUrl: '' };
     delete state.downloadIdToKey[delta.id];
     return true;
   }
 
   if (delta.state?.current === 'interrupted') {
     const error = delta.error?.current || 'Download interrupted';
-    state.results[key] = { ...state.results[key], status: 'error', error, blobUrl: '' };
+    state.results[key] = (isCancellationRequested(currentResult) || isUserCancelled)
+      ? { ...currentResult, status: CANCELLED_STATUS, error: 'Cancelled', blobUrl: '' }
+      : { ...currentResult, status: 'error', error, blobUrl: '' };
     delete state.downloadIdToKey[delta.id];
     return true;
   }

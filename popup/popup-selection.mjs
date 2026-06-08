@@ -42,9 +42,11 @@ export function getOrderedEpisodes(episodes, order = DEFAULT_LIST_ORDER) {
     : orderedEpisodes;
 }
 
-export function selectFirstEpisodes(episodes, count) {
+export function selectFirstEpisodes(episodes, count, existingSelectedEpisodeIds = null) {
   const limit = Math.max(0, Math.floor(Number(count || 0)));
-  const selected = new Set();
+  const selected = existingSelectedEpisodeIds instanceof Set
+    ? new Set(existingSelectedEpisodeIds)
+    : new Set();
 
   for (const ep of (Array.isArray(episodes) ? episodes : []).slice(0, limit)) {
     const key = getEpisodeKey(ep);

@@ -20,11 +20,11 @@
     "description": "Language picker label."
   },
   "heroTitle": {
-    "message": "批量下载器",
+    "message": "播客下载",
     "description": "Popup title."
   },
   "statusNotScanned": {
-    "message": "未扫描",
+    "message": "先扫描当前播客页",
     "description": "Initial status."
   },
   "actionsAriaLabel": {
@@ -52,11 +52,11 @@
     "description": "Scanned count label."
   },
   "statSelected": {
-    "message": "已勾选",
+    "message": "已选择",
     "description": "Selected count label."
   },
   "statAudioLinks": {
-    "message": "音频",
+    "message": "音频链接",
     "description": "Captured audio URL count label."
   },
   "statQueue": {
@@ -72,7 +72,7 @@
     "description": "Error count label."
   },
   "statMissingAudio": {
-    "message": "缺失",
+    "message": "无音频",
     "description": "Missing audio URL count label."
   },
   "techPanelAriaLabel": {
@@ -80,7 +80,7 @@
     "description": "Tech panel label."
   },
   "downloadPathLabel": {
-    "message": "下载路径",
+    "message": "保存位置",
     "description": "Download path label."
   },
   "stateIdle": {
@@ -92,7 +92,7 @@
     "description": "Running state."
   },
   "defaultDirUnknown": {
-    "message": "暂未推断",
+    "message": "等待浏览器提供",
     "description": "Default directory fallback."
   },
   "pipelineAriaLabel": {
@@ -100,11 +100,11 @@
     "description": "Pipeline label."
   },
   "pipelineGettingUrl": {
-    "message": "取链",
+    "message": "获取链接",
     "description": "Getting URL status."
   },
   "pipelineResolving": {
-    "message": "解析",
+    "message": "准备",
     "description": "Resolving status."
   },
   "pipelineDownloading": {
@@ -116,7 +116,7 @@
     "description": "Submitted status."
   },
   "episodesSummary": {
-    "message": "查看已抓取条目",
+    "message": "剧集列表",
     "description": "Details summary label."
   },
   "episodePage": {
@@ -140,7 +140,7 @@
     "description": "Scan fallback error."
   },
   "scanComplete": {
-    "message": "扫描完成，找到 $count$ 条播客。",
+    "message": "扫描完成，找到 $count$ 集。",
     "description": "Scan completion message.",
     "placeholders": {
       "count": {
@@ -150,7 +150,7 @@
     }
   },
   "scanCompleteShort": {
-    "message": "扫描完成，共找到 $count$ 条。",
+    "message": "扫描完成，共找到 $count$ 集。",
     "description": "Scan completion short message.",
     "placeholders": {
       "count": {
@@ -190,11 +190,11 @@
     "description": "Selection controls section label."
   },
   "selectFirstLabel": {
-    "message": "前 N 条",
+    "message": "批量选择",
     "description": "Select first N input label."
   },
   "selectFirstButton": {
-    "message": "勾选",
+    "message": "添加",
     "description": "Select first N button."
   },
   "selectAllButton": {
@@ -214,11 +214,11 @@
     "description": "Button label for the reversed episode list order."
   },
   "selectEpisodeLabel": {
-    "message": "勾选剧集",
+    "message": "选择剧集",
     "description": "Episode checkbox aria label prefix."
   },
   "downloadNeedsSelection": {
-    "message": "请先勾选要下载的剧集。",
+    "message": "请先选择要下载的剧集。",
     "description": "No selected episodes warning."
   },
   "invalidSelectFirstCount": {
@@ -226,17 +226,21 @@
     "description": "Invalid first N selection count."
   },
   "selectedFirstCount": {
-    "message": "已勾选前 $count$ 条剧集。",
+    "message": "已将前 $count$ 集加入选择，当前共 $selected$ 集。",
     "description": "Selected first N status.",
     "placeholders": {
       "count": {
         "content": "$1",
         "example": "5"
+      },
+      "selected": {
+        "content": "$2",
+        "example": "8"
       }
     }
   },
   "selectionUpdated": {
-    "message": "已勾选剧集：$count$",
+    "message": "已选择剧集：$count$",
     "description": "Selected count status.",
     "placeholders": {
       "count": {
@@ -246,11 +250,11 @@
     }
   },
   "selectionCleared": {
-    "message": "已清空勾选。",
+    "message": "已清空选择。",
     "description": "Selection cleared status."
   },
   "selectedMissingAudioFallback": {
-    "message": "已选剧集中有 $count$ 条未读取到音频链接，将尝试页面回退解析。",
+    "message": "已选剧集中有 $count$ 集暂未拿到音频链接，将继续尝试解析。",
     "description": "Selected episodes missing cached audio URL warning.",
     "placeholders": {
       "count": {
@@ -274,7 +278,7 @@
     "description": "No selected episodes could be resolved to audio links."
   },
   "submittingDownloads": {
-    "message": "正在将 $count$ 条播客提交到后台处理...",
+    "message": "正在提交 $count$ 集到后台处理...",
     "description": "Download submission status.",
     "placeholders": {
       "count": {
@@ -284,7 +288,7 @@
     }
   },
   "queueAdded": {
-    "message": "已加入下载队列：$count$ 条",
+    "message": "已加入下载队列：$count$ 集",
     "description": "Queue added status.",
     "placeholders": {
       "count": {
@@ -316,7 +320,7 @@
     }
   },
   "zipDownloadButton": {
-    "message": "打包ZIP",
+    "message": "导出ZIP",
     "description": "ZIP download button."
   },
   "zipIdle": {
@@ -397,6 +401,10 @@
     "message": "已取消。",
     "description": "Shown after cancelling a regular download item."
   },
+  "cancellingStatus": {
+    "message": "正在取消该剧集...",
+    "description": "Shown while cancelling a regular download item."
+  },
   "zipCancelled": {
     "message": "ZIP 已停止。",
     "description": "ZIP task cancelled status."
@@ -406,7 +414,7 @@
     "description": "Current task progress region label."
   },
   "taskProgressIdle": {
-    "message": "当前任务空闲",
+    "message": "暂无下载任务",
     "description": "Idle current task progress text."
   },
   "taskProgressDownload": {

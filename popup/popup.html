@@ -23,8 +23,8 @@
       </div>
       <div class="hero-row">
         <div>
-          <h1 data-i18n="heroTitle">批量下载器</h1>
-          <p id="info" class="status-copy" data-i18n="statusNotScanned">未扫描</p>
+          <h1 data-i18n="heroTitle">播客下载</h1>
+          <p id="info" class="status-copy" data-i18n="statusNotScanned">先扫描当前播客页</p>
         </div>
         <div class="status-mark" aria-hidden="true"></div>
       </div>
@@ -33,17 +33,17 @@
     <section class="actions" aria-label="主要操作" data-i18n-aria-label="actionsAriaLabel">
       <button id="btn-scan" class="btn btn-primary" type="button" data-i18n="scanButton">扫描</button>
       <button id="btn-download" class="btn btn-primary" type="button" data-i18n="downloadButton">下载</button>
-      <button id="btn-zip-download" class="btn btn-primary" type="button" data-i18n="zipDownloadButton">ZIP</button>
+      <button id="btn-zip-download" class="btn btn-primary" type="button" data-i18n="zipDownloadButton">导出ZIP</button>
       <button id="btn-cancel-task" class="btn btn-reset" type="button" data-i18n="cancelTaskButton" hidden>停止</button>
       <button id="btn-reset" class="btn btn-reset" type="button" data-i18n="resetButton">重置</button>
     </section>
 
     <section class="selection-panel" aria-label="选择剧集" data-i18n-aria-label="selectionAriaLabel">
       <label class="select-first-control">
-        <span data-i18n="selectFirstLabel">前 N 条</span>
+        <span data-i18n="selectFirstLabel">批量选择</span>
         <input id="selectFirstCount" type="number" min="1" inputmode="numeric" />
       </label>
-      <button id="btn-select-first" class="btn btn-compact" type="button" data-i18n="selectFirstButton">勾选</button>
+      <button id="btn-select-first" class="btn btn-compact" type="button" data-i18n="selectFirstButton">添加</button>
       <button id="btn-select-all" class="btn btn-compact" type="button" data-i18n="selectAllButton">全选</button>
       <button id="btn-clear-selection" class="btn btn-compact" type="button" data-i18n="clearSelectionButton">清空</button>
     </section>
@@ -55,11 +55,7 @@
       </div>
       <div class="stat">
         <span id="selectedCount" class="stat-value">0</span>
-        <span class="stat-label" data-i18n="statSelected">已勾选</span>
-      </div>
-      <div class="stat">
-        <span id="audioUrlCount" class="stat-value">0</span>
-        <span class="stat-label" data-i18n="statAudioLinks">Audio</span>
+        <span class="stat-label" data-i18n="statSelected">已选择</span>
       </div>
       <div class="stat">
         <span id="queueCount" class="stat-value">0</span>
@@ -73,35 +69,31 @@
         <span id="errorCount" class="stat-value">0</span>
         <span class="stat-label" data-i18n="statError">失败</span>
       </div>
-      <div class="stat">
-        <span id="missingAudioCount" class="stat-value">0</span>
-        <span class="stat-label" data-i18n="statMissingAudio">缺失</span>
-      </div>
     </section>
 
     <section class="tech-panel" aria-label="后台处理信息" data-i18n-aria-label="techPanelAriaLabel">
       <div class="tech-row">
-        <span class="tech-label" data-i18n="downloadPathLabel">DOWNLOAD PATH</span>
+        <span class="tech-label" data-i18n="downloadPathLabel">保存位置</span>
         <span id="activeState" class="tech-badge" data-state="idle">IDLE</span>
       </div>
-      <div id="defaultDir" class="path-value" data-empty-dir="true" data-i18n="defaultDirUnknown">暂未推断</div>
+      <div id="defaultDir" class="path-value" data-empty-dir="true" data-i18n="defaultDirUnknown">等待浏览器提供</div>
       <div class="pipeline" aria-label="处理流水线状态" data-i18n-aria-label="pipelineAriaLabel">
-        <span><span data-i18n="pipelineGettingUrl">取链</span> <strong id="gettingUrlCount">0</strong></span>
-        <span><span data-i18n="pipelineResolving">解析</span> <strong id="resolvingCount">0</strong></span>
+        <span><span data-i18n="pipelineGettingUrl">获取链接</span> <strong id="gettingUrlCount">0</strong></span>
+        <span><span data-i18n="pipelineResolving">准备</span> <strong id="resolvingCount">0</strong></span>
         <span><span data-i18n="pipelineDownloading">下载</span> <strong id="downloadingCount">0</strong></span>
         <span><span data-i18n="pipelineSubmitted">已提交</span> <strong id="submittedCount">0</strong></span>
       </div>
       <div class="task-progress-panel" aria-label="当前任务进度" data-i18n-aria-label="taskProgressLabel">
         <progress id="taskProgress" class="task-progress" max="100" value="0" aria-valuemin="0" aria-valuemax="100"></progress>
-        <div id="taskProgressText" class="task-progress-text" data-i18n="taskProgressIdle">当前任务空闲</div>
+        <div id="taskProgressText" class="task-progress-text" data-i18n="taskProgressIdle">暂无下载任务</div>
       </div>
-      <div id="zipStatus" class="zip-status" data-empty-zip="true" data-i18n="zipIdle">ZIP IDLE</div>
+      <div id="zipStatus" class="zip-status" data-empty-zip="true" data-i18n="zipIdle">ZIP 空闲</div>
     </section>
 
     <section class="episodes">
       <details>
         <summary>
-          <span class="summary-title" data-i18n="episodesSummary">查看已抓取条目</span>
+          <span class="summary-title" data-i18n="episodesSummary">剧集列表</span>
           <span class="summary-actions">
             <span id="count" class="count-badge">0</span>
             <button id="btn-toggle-list-order" class="btn btn-compact btn-order-toggle" type="button" aria-label="顺序" aria-pressed="false">&#8593;</button>

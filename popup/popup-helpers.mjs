@@ -96,12 +96,46 @@ export function buildTaskProgressModel(status = {}) {
   };
 }
 
+export function replaceChildrenPreservingScroll(element, ...children) {
+  if (!element?.replaceChildren) return;
+
+  const scrollTop = Number.isFinite(Number(element.scrollTop)) ? element.scrollTop : 0;
+  element.replaceChildren(...children);
+  element.scrollTop = scrollTop;
+}
+
+export function buildEpisodeStatusSignature(status = {}, episodeKeys = []) {
+  const results = status?.results && typeof status.results === 'object' ? status.results : {};
+  const keys = Array.isArray(episodeKeys) && episodeKeys.length
+    ? episodeKeys
+    : Object.keys(results).sort();
+
+  return keys
+    .map((key) => {
+      const result = results[key] || {};
+      return [
+        key,
+        result.status || '',
+        result.error || '',
+        result.canCancel === true ? '1' : '0',
+        result.isCancelling === true ? '1' : '0',
+        result.downloadId ?? '',
+      ].join(':');
+    })
+    .join('|');
+}
+
+export function shouldRenderEpisodeList(previousStatus = {}, nextStatus = {}, episodeKeys = []) {
+  return buildEpisodeStatusSignature(previousStatus, episodeKeys) !== buildEpisodeStatusSignature(nextStatus, episodeKeys);
+}
+
 export function createEpisodeListItem(documentRef, ep, labels = {}, options = {}) {
   const li = documentRef.createElement('li');
   const item = documentRef.createElement('div');
   const title = documentRef.createElement('div');
   const link = documentRef.createElement('a');
   const cancelButton = documentRef.createElement('button');
+  const status = documentRef.createElement('span');
   const checkbox = documentRef.createElement('input');
   const text = ep?.title || ep?.episodeId || labels.untitledEpisodeLabel || 'Untitled episode';
   const key = options.key || ep?.episodeId || ep?.uuid || ep?.audioUrl || '';
@@ -131,6 +165,11 @@ export function createEpisodeListItem(documentRef, ep, labels = {}, options = {}
   link.textContent = labels.episodePageLabel || 'episode page';
 
   item.append(checkbox, title, link);
+  if (options.result?.isCancelling) {
+    status.className = 'episode-status episode-status-cancelling';
+    status.textContent = labels.cancellingLabel || 'Cancelling';
+    item.appendChild(status);
+  }
   if (options.result?.canCancel) {
     cancelButton.type = 'button';
     cancelButton.className = 'episode-cancel';
